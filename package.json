@@ -1,0 +1,20 @@
+{
+  "name": "install-llvm-action",
+  "version": "1.0.0",
+  "description": "A GitHub Action for downloading and installing LLVM and Clang binaries.",
+  "author": "Kyle Mayes <kyle@mayeses.com>",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build index.js"
+  },
+  "dependencies": {
+    "@actions/core": "~1.2.4",
+    "@actions/exec": "~1.0.4",
+    "@actions/io": "~1.0.2",
+    "@actions/tool-cache": "~1.5.5"
+  },
+  "devDependencies": {
+    "@zeit/ncc": "~0.22.3"
+  }
+}
