@@ -32,7 +32,8 @@ const VERSIONS = getVersions([
   "7.1.0",
   "8.0.0", "8.0.1",
   "9.0.0", "9.0.1",
-  "10.0.0",
+  "10.0.0", "10.0.1",
+  "11.0.0",
 ]);
 
 function compareVersions(left, right) {
@@ -128,6 +129,8 @@ const UBUNTU = {
   "9.0.0": "-ubuntu-18.04",
   "9.0.1": "-ubuntu-16.04",
   "10.0.0": "-ubuntu-18.04",
+  "10.0.1": "-ubuntu-18.04",
+  "11.0.0": "-ubuntu-20.04",
 };
 
 function getLinuxUrl(version) {
