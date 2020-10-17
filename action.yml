@@ -9,6 +9,9 @@ inputs:
   version:
     description: "The version of LLVM and Clang binaries to install."
     required: true
+  force-version:
+    description: "Whether to accept unsupported LLVM and Clang versions."
+    required: false
   ubuntu-version:
     description: "The version override of Ubuntu to use for the Linux platform."
     required: false

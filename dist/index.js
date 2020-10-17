@@ -4918,8 +4918,8 @@ var DARWIN_MISSING = new Set([
     "8.0.1",
 ]);
 /** Gets an LLVM download URL for the Darwin platform. */
-function getDarwinUrl(version) {
-    if (DARWIN_MISSING.has(version)) {
+function getDarwinUrl(version, options) {
+    if (!options.forceVersion && DARWIN_MISSING.has(version)) {
         return null;
     }
     var darwin = version === "9.0.0" ? "-darwin-apple" : "-apple-darwin";
@@ -4962,9 +4962,20 @@ var UBUNTU = {
     "10.0.1": "-ubuntu-16.04",
     "11.0.0": "-ubuntu-20.04",
 };
+/** The latest supported LLVM version for the Linux (Ubuntu) platform. */
+var MAX_UBUNTU = "11.0.0";
 /** Gets an LLVM download URL for the Linux (Ubuntu) platform. */
-function getLinuxUrl(version, ubuntuVersion) {
-    var ubuntu = ubuntuVersion ? "-ubuntu-" + ubuntuVersion : UBUNTU[version];
+function getLinuxUrl(version, options) {
+    var ubuntu;
+    if (options.ubuntuVersion) {
+        ubuntu = "-ubuntu-" + options.ubuntuVersion;
+    }
+    else if (options.forceVersion) {
+        ubuntu = UBUNTU[MAX_UBUNTU];
+    }
+    else {
+        ubuntu = UBUNTU[version];
+    }
     if (!ubuntu) {
         return null;
     }
@@ -4982,8 +4993,8 @@ var WIN32_MISSING = new Set([
     "10.0.1",
 ]);
 /** Gets an LLVM download URL for the Windows platform. */
-function getWin32Url(version) {
-    if (WIN32_MISSING.has(version)) {
+function getWin32Url(version, options) {
+    if (!options.forceVersion && WIN32_MISSING.has(version)) {
         return null;
     }
     var prefix = "LLVM-";
@@ -4996,32 +5007,38 @@ function getWin32Url(version) {
     }
 }
 /** Gets an LLVM download URL. */
-function getUrl(platform, version, ubuntuVersion) {
+function getUrl(platform, version, options) {
     switch (platform) {
         case "darwin":
-            return getDarwinUrl(version);
+            return getDarwinUrl(version, options);
         case "linux":
-            return getLinuxUrl(version, ubuntuVersion);
+            return getLinuxUrl(version, options);
         case "win32":
-            return getWin32Url(version);
+            return getWin32Url(version, options);
         default:
             return null;
     }
 }
 /** Gets the most recent specific LLVM version for which there is a valid download URL. */
-function getSpecificVersionAndUrl(platform, version, ubuntuVersion) {
-    if (!VERSIONS.has(version)) {
-        throw new Error("Unsupported target! (platform='" + platform + "', version='" + version + "')");
+function getSpecificVersionAndUrl(platform, options) {
+    if (options.forceVersion) {
+        return [options.version, getUrl(platform, options.version, options)];
     }
-    for (var _i = 0, _a = getSpecificVersions(version); _i < _a.length; _i++) {
+    if (!VERSIONS.has(options.version)) {
+        throw new Error("Unsupported target! (platform='" + platform + "', version='" + options.version + "')");
+    }
+    for (var _i = 0, _a = getSpecificVersions(options.version); _i < _a.length; _i++) {
         var specificVersion = _a[_i];
-        var url = getUrl(platform, specificVersion, ubuntuVersion);
+        var url = getUrl(platform, specificVersion, options);
         if (url) {
             return [specificVersion, url];
         }
     }
-    throw new Error("Unsupported target! (platform='" + platform + "', version='" + version + "')");
+    throw new Error("Unsupported target! (platform='" + platform + "', version='" + options.version + "')");
 }
+//================================================
+// Action
+//================================================
 function install(options) {
     return __awaiter(this, void 0, void 0, function () {
         var platform, _a, specificVersion, url, archive, exit;
@@ -5029,7 +5046,7 @@ function install(options) {
             switch (_b.label) {
                 case 0:
                     platform = process.platform;
-                    _a = getSpecificVersionAndUrl(platform, options.version, options.ubuntuVersion), specificVersion = _a[0], url = _a[1];
+                    _a = getSpecificVersionAndUrl(platform, options), specificVersion = _a[0], url = _a[1];
                     core.setOutput("version", specificVersion);
                     console.log("Installing LLVM and Clang " + options.version + " (" + specificVersion + ")...");
                     console.log("Downloading and extracting '" + url + "'...");
@@ -5064,7 +5081,7 @@ function run(options) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!(options.cached === "true")) return [3 /*break*/, 1];
+                    if (!options.cached) return [3 /*break*/, 1];
                     console.log("Using cached LLVM and Clang " + options.version + "...");
                     return [3 /*break*/, 3];
                 case 1: return [4 /*yield*/, install(options)];
@@ -5082,13 +5099,14 @@ function run(options) {
         });
     });
 }
-function test(platform, version, ubuntuVersion) {
+function test(platform, options) {
     return __awaiter(this, void 0, void 0, function () {
         var _a, specificVersion, url;
         return __generator(this, function (_b) {
-            _a = getSpecificVersionAndUrl(platform, version, ubuntuVersion), specificVersion = _a[0], url = _a[1];
-            console.log("Version: " + version + " => " + specificVersion);
-            console.log("Ubuntu version: " + (ubuntuVersion || "<default>"));
+            _a = getSpecificVersionAndUrl(platform, options), specificVersion = _a[0], url = _a[1];
+            console.log("Version: " + options.version + " => " + specificVersion);
+            console.log("Force version: " + options.forceVersion);
+            console.log("Ubuntu version: " + (options.ubuntuVersion || "<default>"));
             console.log("URL: " + url);
             return [2 /*return*/, new Promise(function (resolve, reject) {
                     https.get(url, function (res) {
@@ -5109,17 +5127,20 @@ try {
     var start = process.argv.indexOf("test");
     if (start === -1) {
         var version = core.getInput("version");
+        var forceVersion = (core.getInput("force-version") || "").toLowerCase() === "true";
         var ubuntuVersion = core.getInput("ubuntu-version");
         var directory = core.getInput("directory");
-        var cached = core.getInput("cached") || "false";
-        var options = { version: version, ubuntuVersion: ubuntuVersion, directory: directory, cached: cached };
+        var cached = (core.getInput("cached") || "").toLowerCase() === "true";
+        var options = { version: version, forceVersion: forceVersion, ubuntuVersion: ubuntuVersion, directory: directory, cached: cached };
         run(options);
     }
     else {
         var platform = process.argv[start + 1];
         var version = process.argv[start + 2];
-        var ubuntuVersion = process.argv[start + 3];
-        test(platform, version, ubuntuVersion);
+        var forceVersion = (process.argv[start + 3] || "").toLowerCase() === "true";
+        var ubuntuVersion = process.argv[start + 4];
+        var options = { version: version, forceVersion: forceVersion, ubuntuVersion: ubuntuVersion, directory: "", cached: false };
+        test(platform, options);
     }
 }
 catch (error) {

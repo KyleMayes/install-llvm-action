@@ -5,6 +5,14 @@ import * as tc from "@actions/tool-cache";
 import * as https from "https";
 import * as path from "path";
 
+interface Options {
+  version: string,
+  forceVersion: boolean,
+  ubuntuVersion?: string,
+  directory: string,
+  cached: boolean,
+}
+
 //================================================
 // Version
 //================================================
@@ -104,8 +112,8 @@ const DARWIN_MISSING: Set<string> = new Set([
 ]);
 
 /** Gets an LLVM download URL for the Darwin platform. */
-function getDarwinUrl(version: string): string | null {
-  if (DARWIN_MISSING.has(version)) {
+function getDarwinUrl(version: string, options: Options): string | null {
+  if (!options.forceVersion && DARWIN_MISSING.has(version)) {
     return null;
   }
 
@@ -150,9 +158,20 @@ const UBUNTU: { [key: string]: string } = {
   "11.0.0": "-ubuntu-20.04",
 };
 
+/** The latest supported LLVM version for the Linux (Ubuntu) platform. */
+const MAX_UBUNTU: string = "11.0.0";
+
 /** Gets an LLVM download URL for the Linux (Ubuntu) platform. */
-function getLinuxUrl(version: string, ubuntuVersion?: string): string | null {
-  const ubuntu = ubuntuVersion ? `-ubuntu-${ubuntuVersion}` : UBUNTU[version];
+function getLinuxUrl(version: string, options: Options): string | null {
+  let ubuntu;
+  if (options.ubuntuVersion) {
+    ubuntu = `-ubuntu-${options.ubuntuVersion}`;
+  } else if (options.forceVersion) {
+    ubuntu = UBUNTU[MAX_UBUNTU];
+  } else {
+    ubuntu = UBUNTU[version];
+  }
+
   if (!ubuntu) {
     return null;
   }
@@ -172,8 +191,8 @@ const WIN32_MISSING: Set<string> = new Set([
 ]);
 
 /** Gets an LLVM download URL for the Windows platform. */
-function getWin32Url(version: string): string | null {
-  if (WIN32_MISSING.has(version)) {
+function getWin32Url(version: string, options: Options): string | null {
+  if (!options.forceVersion && WIN32_MISSING.has(version)) {
     return null;
   }
 
@@ -187,49 +206,46 @@ function getWin32Url(version: string): string | null {
 }
 
 /** Gets an LLVM download URL. */
-function getUrl(platform: string, version: string, ubuntuVersion?: string): string | null {
+function getUrl(platform: string, version: string, options: Options): string | null {
   switch (platform) {
     case "darwin":
-      return getDarwinUrl(version);
+      return getDarwinUrl(version, options);
     case "linux":
-      return getLinuxUrl(version, ubuntuVersion);
+      return getLinuxUrl(version, options);
     case "win32":
-      return getWin32Url(version);
+      return getWin32Url(version, options);
     default:
       return null;
   }
 }
 
 /** Gets the most recent specific LLVM version for which there is a valid download URL. */
-function getSpecificVersionAndUrl(platform: string, version: string, ubuntuVersion?: string): [string, string] {
-  if (!VERSIONS.has(version)) {
-    throw new Error(`Unsupported target! (platform='${platform}', version='${version}')`);
+function getSpecificVersionAndUrl(platform: string, options: Options): [string, string] {
+  if (options.forceVersion) {
+    return [options.version, getUrl(platform, options.version, options)!];
   }
 
-  for (const specificVersion of getSpecificVersions(version,)) {
-    const url = getUrl(platform, specificVersion, ubuntuVersion);
+  if (!VERSIONS.has(options.version)) {
+    throw new Error(`Unsupported target! (platform='${platform}', version='${options.version}')`);
+  }
+
+  for (const specificVersion of getSpecificVersions(options.version)) {
+    const url = getUrl(platform, specificVersion, options);
     if (url) {
       return [specificVersion, url];
     }
   }
 
-  throw new Error(`Unsupported target! (platform='${platform}', version='${version}')`);
+  throw new Error(`Unsupported target! (platform='${platform}', version='${options.version}')`);
 }
 
 //================================================
 // Action
 //================================================
 
-interface Options {
-  version: string,
-  ubuntuVersion?: string,
-  directory: string,
-  cached: string,
-}
-
 async function install(options: Options): Promise<void> {
   const platform = process.platform;
-  const [specificVersion, url] = getSpecificVersionAndUrl(platform, options.version, options.ubuntuVersion);
+  const [specificVersion, url] = getSpecificVersionAndUrl(platform, options);
   core.setOutput("version", specificVersion);
 
   console.log(`Installing LLVM and Clang ${options.version} (${specificVersion})...`);
@@ -252,7 +268,7 @@ async function install(options: Options): Promise<void> {
 }
 
 async function run(options: Options): Promise<void> {
-  if (options.cached === "true") {
+  if (options.cached) {
     console.log(`Using cached LLVM and Clang ${options.version}...`);
   } else {
     await install(options);
@@ -265,10 +281,11 @@ async function run(options: Options): Promise<void> {
   core.exportVariable("DYLD_LIBRARY_PATH", `${lib}:${process.env.DYLD_LIBRARY_PATH || ""}`);
 }
 
-async function test(platform: string, version: string, ubuntuVersion: string): Promise<void> {
-  const [specificVersion, url] = getSpecificVersionAndUrl(platform, version, ubuntuVersion);
-  console.log(`Version: ${version} => ${specificVersion}`);
-  console.log(`Ubuntu version: ${ubuntuVersion || "<default>"}`);
+async function test(platform: string, options: Options): Promise<void> {
+  const [specificVersion, url] = getSpecificVersionAndUrl(platform, options);
+  console.log(`Version: ${options.version} => ${specificVersion}`);
+  console.log(`Force version: ${options.forceVersion}`);
+  console.log(`Ubuntu version: ${options.ubuntuVersion || "<default>"}`);
   console.log(`URL: ${url}`);
   return new Promise((resolve, reject) => {
     https.get(url, res => {
@@ -287,16 +304,19 @@ try {
   const start = process.argv.indexOf("test");
   if (start === -1) {
     const version = core.getInput("version");
+    const forceVersion = (core.getInput("force-version") || "").toLowerCase() === "true";
     const ubuntuVersion = core.getInput("ubuntu-version");
     const directory = core.getInput("directory");
-    const cached = core.getInput("cached") || "false";
-    const options = { version, ubuntuVersion, directory, cached };
+    const cached = (core.getInput("cached") || "").toLowerCase() === "true";
+    const options = { version, forceVersion, ubuntuVersion, directory, cached };
     run(options);
   } else {
     const platform = process.argv[start + 1];
     const version = process.argv[start + 2];
-    const ubuntuVersion = process.argv[start + 3];
-    test(platform, version, ubuntuVersion);
+    const forceVersion = (process.argv[start + 3] || "").toLowerCase() === "true";
+    const ubuntuVersion = process.argv[start + 4];
+    const options = { version, forceVersion, ubuntuVersion, directory: "", cached: false };
+    test(platform, options);
   }
 } catch (error) {
   console.error(error.stack);

@@ -20,6 +20,20 @@ or just `3`. When specifying a minimum version, the highest compatible version
 supported by the platform will be installed (e.g., `3.6.2` for `3.6` or `3.9.1`
 for `3`).
 
+### `force-version`
+
+Whether to accept unsupported LLVM and Clang versions.
+
+This action will by default reject unsupported LLVM and Clang versions. For
+example, if you want to download LLVM and Clang `69.0.0` but that version is not
+yet supported by this action, you can set this option to `true` to allow usage
+of this action.
+
+**Important:** You may need to set `ubuntu-version` as well for this to work,
+this action will use the Ubuntu version for the most recent supported version
+which may not work for the version you are requesting. Also, there are no
+guarantees that this will work at all.
+
 ### `ubuntu-version`
 
 The version override of Ubuntu to use for the Linux platform.
