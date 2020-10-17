@@ -2,6 +2,7 @@ import * as core from "@actions/core";
 import * as exec from "@actions/exec";
 import * as io from "@actions/io";
 import * as tc from "@actions/tool-cache";
+import * as https from "https";
 import * as path from "path";
 
 //================================================
@@ -254,12 +255,36 @@ async function run(options: Options): Promise<void> {
   core.exportVariable("DYLD_LIBRARY_PATH", `${lib}:${process.env.DYLD_LIBRARY_PATH || ""}`);
 }
 
+async function test(platform: string, version: string): Promise<void> {
+  const [specificVersion, url] = getSpecificVersionAndUrl(platform, version);
+  console.log(`Version: ${version} => ${specificVersion}`);
+  console.log(`URL: ${url}`);
+  return new Promise((resolve, reject) => {
+    https.get(url, res => {
+      console.log(`Status: ${res.statusCode}`);
+      console.log(`Content-Length: ${res.headers["content-length"]}`)
+      if (res.statusCode && res.statusCode >= 200 && res.statusCode <= 399) {
+        resolve();
+      } else {
+        reject("Failed to download LLVM and Clang binaries.");
+      }
+    });
+  });
+}
+
 try {
-  const version = core.getInput("version");
-  const directory = core.getInput("directory");
-  const cached = core.getInput("cached") || "false";
-  const options = { version, directory, cached };
-  run(options);
+  const start = process.argv.indexOf("test");
+  if (start === -1) {
+    const version = core.getInput("version");
+    const directory = core.getInput("directory");
+    const cached = core.getInput("cached") || "false";
+    const options = { version, directory, cached };
+    run(options);
+  } else {
+    const platform = process.argv[start + 1];
+    const version = process.argv[start + 2];
+    test(platform, version);
+  }
 } catch (error) {
   console.error(error.stack);
   core.setFailed(error.message);

@@ -4828,6 +4828,7 @@ var core = __webpack_require__(470);
 var exec = __webpack_require__(986);
 var io = __webpack_require__(1);
 var tc = __webpack_require__(533);
+var https = __webpack_require__(211);
 var path = __webpack_require__(622);
 //================================================
 // Version
@@ -5074,12 +5075,42 @@ function run(options) {
         });
     });
 }
+function test(platform, version) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _a, specificVersion, url;
+        return __generator(this, function (_b) {
+            _a = getSpecificVersionAndUrl(platform, version), specificVersion = _a[0], url = _a[1];
+            console.log("Version: " + version + " => " + specificVersion);
+            console.log("URL: " + url);
+            return [2 /*return*/, new Promise(function (resolve, reject) {
+                    https.get(url, function (res) {
+                        console.log("Status: " + res.statusCode);
+                        console.log("Content-Length: " + res.headers["content-length"]);
+                        if (res.statusCode && res.statusCode >= 200 && res.statusCode <= 399) {
+                            resolve();
+                        }
+                        else {
+                            reject("Failed to download LLVM and Clang binaries.");
+                        }
+                    });
+                })];
+        });
+    });
+}
 try {
-    var version = core.getInput("version");
-    var directory = core.getInput("directory");
-    var cached = core.getInput("cached") || "false";
-    var options = { version: version, directory: directory, cached: cached };
-    run(options);
+    var start = process.argv.indexOf("test");
+    if (start === -1) {
+        var version = core.getInput("version");
+        var directory = core.getInput("directory");
+        var cached = core.getInput("cached") || "false";
+        var options = { version: version, directory: directory, cached: cached };
+        run(options);
+    }
+    else {
+        var platform = process.argv[start + 1];
+        var version = process.argv[start + 2];
+        test(platform, version);
+    }
 }
 catch (error) {
     console.error(error.stack);

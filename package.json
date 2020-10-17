@@ -6,7 +6,8 @@
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "scripts": {
-    "build": "ncc build index.ts"
+    "build": "ncc build index.ts",
+    "test": "ts-node index.ts test"
   },
   "dependencies": {
     "@actions/core": "~1.2.6",
