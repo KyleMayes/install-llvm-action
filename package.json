@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "scripts": {
-    "build": "ncc build index.js"
+    "build": "ncc build index.ts"
   },
   "dependencies": {
     "@actions/core": "~1.2.6",
@@ -15,6 +15,7 @@
     "@actions/tool-cache": "~1.5.5"
   },
   "devDependencies": {
+    "@types/node": "~12.12.2",
     "@zeit/ncc": "~0.22.3"
   }
 }

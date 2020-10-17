@@ -40,7 +40,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(104);
+/******/ 		return __webpack_require__(731);
 /******/ 	};
 /******/
 /******/ 	// run startup
@@ -1139,253 +1139,6 @@ function issueCommand(command, message) {
 }
 exports.issueCommand = issueCommand;
 //# sourceMappingURL=file-command.js.map
-
-/***/ }),
-
-/***/ 104:
-/***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
-
-const core = __webpack_require__(470);
-const exec = __webpack_require__(986);
-const io = __webpack_require__(1);
-const tc = __webpack_require__(533);
-const path = __webpack_require__(622);
-
-//================================================
-// Version
-//================================================
-
-function getVersions(full) {
-  const versions = new Set(full);
-
-  for (const version of full) {
-    versions.add(/^\d+/.exec(version)[0]);
-    versions.add(/^\d+\.\d+/.exec(version)[0]);
-  }
-
-  return versions;
-}
-
-const VERSIONS = getVersions([
-  "3.5.0", "3.5.1", "3.5.2",
-  "3.6.0", "3.6.1", "3.6.2",
-  "3.7.0", "3.7.1",
-  "3.8.0", "3.8.1",
-  "3.9.0", "3.9.1",
-  "4.0.0", "4.0.1",
-  "5.0.0", "5.0.1", "5.0.2",
-  "6.0.0", "6.0.1",
-  "7.0.0", "7.0.1",
-  "7.1.0",
-  "8.0.0", "8.0.1",
-  "9.0.0", "9.0.1",
-  "10.0.0", "10.0.1",
-  "11.0.0",
-]);
-
-function compareVersions(left, right) {
-  const leftComponents = left.split(".").map(c => parseInt(c, 10));
-  const rightComponents = right.split(".").map(c => parseInt(c, 10));
-
-  const length = Math.max(leftComponents.length, rightComponents.length);
-  for (let i = 0; i < length; ++i) {
-    const leftComponent = leftComponents[i] || 0;
-    const rightComponent = rightComponents[i] || 0;
-    if (leftComponent > rightComponent) {
-      return 1;
-    } else if (leftComponent < rightComponent) {
-      return -1;
-    }
-  }
-
-  return 0;
-}
-
-function getFullVersions(version) {
-  return Array.from(VERSIONS)
-    .filter(v => /^\d+\.\d+\.\d+$/.test(v) && v.startsWith(version))
-    .sort()
-    .reverse();
-}
-
-//================================================
-// URL
-//================================================
-
-function getGithubUrl(version, prefix, suffix) {
-  const file = `${prefix}${version}${suffix}`;
-  return `https://github.com/llvm/llvm-project/releases/download/llvmorg-${version}/${file}`;
-}
-
-function getReleaseUrl(version, prefix, suffix) {
-  const file = `${prefix}${version}${suffix}`;
-  return `https://releases.llvm.org/${version}/${file}`;
-}
-
-const DARWIN_MISSING = new Set([
-  "3.5.1",
-  "3.6.1",
-  "3.6.2",
-  "3.7.1",
-  "3.8.1",
-  "3.9.1",
-  "6.0.1",
-  "7.0.1",
-  "7.1.0",
-  "8.0.1",
-]);
-
-function getDarwinUrl(version) {
-  if (DARWIN_MISSING.has(version)) {
-    return null;
-  }
-
-  const darwin = version === "9.0.0" ? "-darwin-apple" : "-apple-darwin";
-  const prefix = "clang+llvm-";
-  const suffix = `-x86_64${darwin}.tar.xz`;
-  if (compareVersions(version, "9.0.1") >= 0) {
-    return getGithubUrl(version, prefix, suffix);
-  } else {
-    return getReleaseUrl(version, prefix, suffix);
-  }
-}
-
-const UBUNTU = {
-  "3.5.0": "-ubuntu-14.04",
-  "3.5.1": "",
-  "3.5.2": "-ubuntu-14.04",
-  "3.6.0": "-ubuntu-14.04",
-  "3.6.1": "-ubuntu-14.04",
-  "3.6.2": "-ubuntu-14.04",
-  "3.7.0": "-ubuntu-14.04",
-  "3.7.1": "-ubuntu-14.04",
-  "3.8.0": "-ubuntu-16.04",
-  "3.8.1": "-ubuntu-16.04",
-  "3.9.0": "-ubuntu-16.04",
-  "3.9.1": "-ubuntu-16.04",
-  "4.0.0": "-ubuntu-16.04",
-  "5.0.0": "-ubuntu16.04",
-  "5.0.1": "-ubuntu-16.04",
-  "5.0.2": "-ubuntu-16.04",
-  "6.0.0": "-ubuntu-16.04",
-  "6.0.1": "-ubuntu-16.04",
-  "7.0.0": "-ubuntu-16.04",
-  "7.0.1": "-ubuntu-18.04",
-  "7.1.0": "-ubuntu-14.04",
-  "8.0.0": "-ubuntu-18.04",
-  "9.0.0": "-ubuntu-18.04",
-  "9.0.1": "-ubuntu-16.04",
-  "10.0.0": "-ubuntu-18.04",
-  "10.0.1": "-ubuntu-18.04",
-  "11.0.0": "-ubuntu-20.04",
-};
-
-function getLinuxUrl(version) {
-  const ubuntu = UBUNTU[version];
-  if (!ubuntu) {
-    return null;
-  }
-
-  const prefix = "clang+llvm-";
-  const suffix = `-x86_64-linux-gnu${ubuntu}.tar.xz`;
-  if (compareVersions(version, "9.0.1") >= 0) {
-    return getGithubUrl(version, prefix, suffix);
-  } else {
-    return getReleaseUrl(version, prefix, suffix);
-  }
-}
-
-function getWin32Url(version) {
-  const prefix = "LLVM-";
-  const suffix = compareVersions(version, "3.7.0") >= 0 ? "-win64.exe" : "-win32.exe";
-  if (compareVersions(version, "9.0.1") >= 0) {
-    return getGithubUrl(version, prefix, suffix);
-  } else {
-    return getReleaseUrl(version, prefix, suffix);
-  }
-}
-
-function getUrl(platform, version) {
-  switch (platform) {
-    case "darwin":
-      return getDarwinUrl(version);
-    case "linux":
-      return getLinuxUrl(version);
-    case "win32":
-      return getWin32Url(version);
-    default:
-      return null;
-  }
-}
-
-//================================================
-// Action
-//================================================
-
-async function install(version, directory) {
-  const platform = process.platform;
-  if (!VERSIONS.has(version)) {
-    throw new Error(`Unsupported target! (platform='${platform}', version='${version}')`);
-  }
-
-  let url;
-  let fullVersion;
-  for (const v of getFullVersions(version)) {
-    url = getUrl(platform, v);
-    if (url) {
-      fullVersion = v;
-      core.setOutput("version", fullVersion);
-      break;
-    }
-  }
-
-  if (!url) {
-    throw new Error(`Unsupported target! (platform='${platform}', version='${version}')`);
-  }
-
-  console.log(`Installing LLVM and Clang ${version} (${fullVersion})...`);
-  console.log(`Downloading and extracting '${url}'...`);
-  const archive = await tc.downloadTool(url);
-
-  let exit;
-  if (platform === "win32") {
-    exit = await exec.exec("7z", ["x", archive, `-o${directory}`]);
-  } else {
-    await io.mkdirP(directory);
-    exit = await exec.exec("tar", ["xf", archive, "-C", directory, "--strip-components=1"]);
-  }
-
-  if (exit !== 0) {
-    throw new Error("Could not extract LLVM and Clang binaries.");
-  }
-
-  console.log(`Installed LLVM and Clang ${version} (${fullVersion})!`);
-}
-
-async function run(version, directory, cached) {
-  if (cached === "true") {
-    console.log(`Using cached LLVM and Clang ${version}...`);
-  } else {
-    await install(version, directory);
-  }
-
-  const bin = path.resolve(path.join(directory, "bin"));
-  const lib = path.resolve(path.join(directory, "lib"));
-  core.addPath(bin);
-  core.exportVariable("LD_LIBRARY_PATH", `${lib}:${process.env.LD_LIBRARY_PATH || ""}`);
-  core.exportVariable("DYLD_LIBRARY_PATH", `${lib}:${process.env.DYLD_LIBRARY_PATH || ""}`);
-}
-
-try {
-  const version = core.getInput("version");
-  const directory = core.getInput("directory");
-  const cached = core.getInput("cached") || "false";
-  run(version, directory, cached);
-} catch (error) {
-  console.error(error.stack);
-  core.setFailed(error.message);
-}
-
 
 /***/ }),
 
@@ -5026,6 +4779,294 @@ function bytesToUuid(buf, offset) {
 }
 
 module.exports = bytesToUuid;
+
+
+/***/ }),
+
+/***/ 731:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+exports.__esModule = true;
+var core = __webpack_require__(470);
+var exec = __webpack_require__(986);
+var io = __webpack_require__(1);
+var tc = __webpack_require__(533);
+var path = __webpack_require__(622);
+//================================================
+// Version
+//================================================
+function getVersions(full) {
+    var versions = new Set(full);
+    for (var _i = 0, full_1 = full; _i < full_1.length; _i++) {
+        var version = full_1[_i];
+        versions.add(/^\d+/.exec(version)[0]);
+        versions.add(/^\d+\.\d+/.exec(version)[0]);
+    }
+    return versions;
+}
+var VERSIONS = getVersions([
+    "3.5.0", "3.5.1", "3.5.2",
+    "3.6.0", "3.6.1", "3.6.2",
+    "3.7.0", "3.7.1",
+    "3.8.0", "3.8.1",
+    "3.9.0", "3.9.1",
+    "4.0.0", "4.0.1",
+    "5.0.0", "5.0.1", "5.0.2",
+    "6.0.0", "6.0.1",
+    "7.0.0", "7.0.1",
+    "7.1.0",
+    "8.0.0", "8.0.1",
+    "9.0.0", "9.0.1",
+    "10.0.0", "10.0.1",
+    "11.0.0",
+]);
+function compareVersions(left, right) {
+    var leftComponents = left.split(".").map(function (c) { return parseInt(c, 10); });
+    var rightComponents = right.split(".").map(function (c) { return parseInt(c, 10); });
+    var length = Math.max(leftComponents.length, rightComponents.length);
+    for (var i = 0; i < length; ++i) {
+        var leftComponent = leftComponents[i] || 0;
+        var rightComponent = rightComponents[i] || 0;
+        if (leftComponent > rightComponent) {
+            return 1;
+        }
+        else if (leftComponent < rightComponent) {
+            return -1;
+        }
+    }
+    return 0;
+}
+function getFullVersions(version) {
+    return Array.from(VERSIONS)
+        .filter(function (v) { return /^\d+\.\d+\.\d+$/.test(v) && v.startsWith(version); })
+        .sort()
+        .reverse();
+}
+//================================================
+// URL
+//================================================
+function getGithubUrl(version, prefix, suffix) {
+    var file = "" + prefix + version + suffix;
+    return "https://github.com/llvm/llvm-project/releases/download/llvmorg-" + version + "/" + file;
+}
+function getReleaseUrl(version, prefix, suffix) {
+    var file = "" + prefix + version + suffix;
+    return "https://releases.llvm.org/" + version + "/" + file;
+}
+var DARWIN_MISSING = new Set([
+    "3.5.1",
+    "3.6.1",
+    "3.6.2",
+    "3.7.1",
+    "3.8.1",
+    "3.9.1",
+    "6.0.1",
+    "7.0.1",
+    "7.1.0",
+    "8.0.1",
+]);
+function getDarwinUrl(version) {
+    if (DARWIN_MISSING.has(version)) {
+        return null;
+    }
+    var darwin = version === "9.0.0" ? "-darwin-apple" : "-apple-darwin";
+    var prefix = "clang+llvm-";
+    var suffix = "-x86_64" + darwin + ".tar.xz";
+    if (compareVersions(version, "9.0.1") >= 0) {
+        return getGithubUrl(version, prefix, suffix);
+    }
+    else {
+        return getReleaseUrl(version, prefix, suffix);
+    }
+}
+var UBUNTU = {
+    "3.5.0": "-ubuntu-14.04",
+    "3.5.1": "",
+    "3.5.2": "-ubuntu-14.04",
+    "3.6.0": "-ubuntu-14.04",
+    "3.6.1": "-ubuntu-14.04",
+    "3.6.2": "-ubuntu-14.04",
+    "3.7.0": "-ubuntu-14.04",
+    "3.7.1": "-ubuntu-14.04",
+    "3.8.0": "-ubuntu-16.04",
+    "3.8.1": "-ubuntu-16.04",
+    "3.9.0": "-ubuntu-16.04",
+    "3.9.1": "-ubuntu-16.04",
+    "4.0.0": "-ubuntu-16.04",
+    "5.0.0": "-ubuntu16.04",
+    "5.0.1": "-ubuntu-16.04",
+    "5.0.2": "-ubuntu-16.04",
+    "6.0.0": "-ubuntu-16.04",
+    "6.0.1": "-ubuntu-16.04",
+    "7.0.0": "-ubuntu-16.04",
+    "7.0.1": "-ubuntu-18.04",
+    "7.1.0": "-ubuntu-14.04",
+    "8.0.0": "-ubuntu-18.04",
+    "9.0.0": "-ubuntu-18.04",
+    "9.0.1": "-ubuntu-16.04",
+    "10.0.0": "-ubuntu-18.04",
+    "10.0.1": "-ubuntu-18.04",
+    "11.0.0": "-ubuntu-20.04",
+};
+function getLinuxUrl(version) {
+    var ubuntu = UBUNTU[version];
+    if (!ubuntu) {
+        return null;
+    }
+    var prefix = "clang+llvm-";
+    var suffix = "-x86_64-linux-gnu" + ubuntu + ".tar.xz";
+    if (compareVersions(version, "9.0.1") >= 0) {
+        return getGithubUrl(version, prefix, suffix);
+    }
+    else {
+        return getReleaseUrl(version, prefix, suffix);
+    }
+}
+function getWin32Url(version) {
+    var prefix = "LLVM-";
+    var suffix = compareVersions(version, "3.7.0") >= 0 ? "-win64.exe" : "-win32.exe";
+    if (compareVersions(version, "9.0.1") >= 0) {
+        return getGithubUrl(version, prefix, suffix);
+    }
+    else {
+        return getReleaseUrl(version, prefix, suffix);
+    }
+}
+function getUrl(platform, version) {
+    switch (platform) {
+        case "darwin":
+            return getDarwinUrl(version);
+        case "linux":
+            return getLinuxUrl(version);
+        case "win32":
+            return getWin32Url(version);
+        default:
+            return null;
+    }
+}
+//================================================
+// Action
+//================================================
+function install(version, directory) {
+    return __awaiter(this, void 0, void 0, function () {
+        var platform, url, fullVersion, _i, _a, v, archive, exit;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    platform = process.platform;
+                    if (!VERSIONS.has(version)) {
+                        throw new Error("Unsupported target! (platform='" + platform + "', version='" + version + "')");
+                    }
+                    for (_i = 0, _a = getFullVersions(version); _i < _a.length; _i++) {
+                        v = _a[_i];
+                        url = getUrl(platform, v);
+                        if (url) {
+                            fullVersion = v;
+                            core.setOutput("version", fullVersion);
+                            break;
+                        }
+                    }
+                    if (!url) {
+                        throw new Error("Unsupported target! (platform='" + platform + "', version='" + version + "')");
+                    }
+                    console.log("Installing LLVM and Clang " + version + " (" + fullVersion + ")...");
+                    console.log("Downloading and extracting '" + url + "'...");
+                    return [4 /*yield*/, tc.downloadTool(url)];
+                case 1:
+                    archive = _b.sent();
+                    if (!(platform === "win32")) return [3 /*break*/, 3];
+                    return [4 /*yield*/, exec.exec("7z", ["x", archive, "-o" + directory])];
+                case 2:
+                    exit = _b.sent();
+                    return [3 /*break*/, 6];
+                case 3: return [4 /*yield*/, io.mkdirP(directory)];
+                case 4:
+                    _b.sent();
+                    return [4 /*yield*/, exec.exec("tar", ["xf", archive, "-C", directory, "--strip-components=1"])];
+                case 5:
+                    exit = _b.sent();
+                    _b.label = 6;
+                case 6:
+                    if (exit !== 0) {
+                        throw new Error("Could not extract LLVM and Clang binaries.");
+                    }
+                    console.log("Installed LLVM and Clang " + version + " (" + fullVersion + ")!");
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+function run(version, directory, cached) {
+    return __awaiter(this, void 0, void 0, function () {
+        var bin, lib;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!(cached === "true")) return [3 /*break*/, 1];
+                    console.log("Using cached LLVM and Clang " + version + "...");
+                    return [3 /*break*/, 3];
+                case 1: return [4 /*yield*/, install(version, directory)];
+                case 2:
+                    _a.sent();
+                    _a.label = 3;
+                case 3:
+                    bin = path.resolve(path.join(directory, "bin"));
+                    lib = path.resolve(path.join(directory, "lib"));
+                    core.addPath(bin);
+                    core.exportVariable("LD_LIBRARY_PATH", lib + ":" + (process.env.LD_LIBRARY_PATH || ""));
+                    core.exportVariable("DYLD_LIBRARY_PATH", lib + ":" + (process.env.DYLD_LIBRARY_PATH || ""));
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+try {
+    var version = core.getInput("version");
+    var directory = core.getInput("directory");
+    var cached = core.getInput("cached") || "false";
+    run(version, directory, cached);
+}
+catch (error) {
+    console.error(error.stack);
+    core.setFailed(error.message);
+}
 
 
 /***/ }),

@@ -1,25 +1,25 @@
-const core = require("@actions/core");
-const exec = require("@actions/exec");
-const io = require("@actions/io");
-const tc = require("@actions/tool-cache");
-const path = require("path");
+import * as core from "@actions/core";
+import * as exec from "@actions/exec";
+import * as io from "@actions/io";
+import * as tc from "@actions/tool-cache";
+import * as path from "path";
 
 //================================================
 // Version
 //================================================
 
-function getVersions(full) {
+function getVersions(full: string[]): Set<string> {
   const versions = new Set(full);
 
   for (const version of full) {
-    versions.add(/^\d+/.exec(version)[0]);
-    versions.add(/^\d+\.\d+/.exec(version)[0]);
+    versions.add(/^\d+/.exec(version)![0]);
+    versions.add(/^\d+\.\d+/.exec(version)![0]);
   }
 
   return versions;
 }
 
-const VERSIONS = getVersions([
+const VERSIONS: Set<string> = getVersions([
   "3.5.0", "3.5.1", "3.5.2",
   "3.6.0", "3.6.1", "3.6.2",
   "3.7.0", "3.7.1",
@@ -36,7 +36,7 @@ const VERSIONS = getVersions([
   "11.0.0",
 ]);
 
-function compareVersions(left, right) {
+function compareVersions(left: string, right: string): -1 | 0 | 1 {
   const leftComponents = left.split(".").map(c => parseInt(c, 10));
   const rightComponents = right.split(".").map(c => parseInt(c, 10));
 
@@ -54,7 +54,7 @@ function compareVersions(left, right) {
   return 0;
 }
 
-function getFullVersions(version) {
+function getFullVersions(version: string): string[] {
   return Array.from(VERSIONS)
     .filter(v => /^\d+\.\d+\.\d+$/.test(v) && v.startsWith(version))
     .sort()
@@ -65,17 +65,17 @@ function getFullVersions(version) {
 // URL
 //================================================
 
-function getGithubUrl(version, prefix, suffix) {
+function getGithubUrl(version: string, prefix: string, suffix: string): string {
   const file = `${prefix}${version}${suffix}`;
   return `https://github.com/llvm/llvm-project/releases/download/llvmorg-${version}/${file}`;
 }
 
-function getReleaseUrl(version, prefix, suffix) {
+function getReleaseUrl(version: string, prefix: string, suffix: string): string {
   const file = `${prefix}${version}${suffix}`;
   return `https://releases.llvm.org/${version}/${file}`;
 }
 
-const DARWIN_MISSING = new Set([
+const DARWIN_MISSING: Set<string> = new Set([
   "3.5.1",
   "3.6.1",
   "3.6.2",
@@ -88,7 +88,7 @@ const DARWIN_MISSING = new Set([
   "8.0.1",
 ]);
 
-function getDarwinUrl(version) {
+function getDarwinUrl(version: string): string | null {
   if (DARWIN_MISSING.has(version)) {
     return null;
   }
@@ -103,7 +103,7 @@ function getDarwinUrl(version) {
   }
 }
 
-const UBUNTU = {
+const UBUNTU: { [key: string]: string } = {
   "3.5.0": "-ubuntu-14.04",
   "3.5.1": "",
   "3.5.2": "-ubuntu-14.04",
@@ -133,7 +133,7 @@ const UBUNTU = {
   "11.0.0": "-ubuntu-20.04",
 };
 
-function getLinuxUrl(version) {
+function getLinuxUrl(version: string): string | null {
   const ubuntu = UBUNTU[version];
   if (!ubuntu) {
     return null;
@@ -148,7 +148,7 @@ function getLinuxUrl(version) {
   }
 }
 
-function getWin32Url(version) {
+function getWin32Url(version: string): string | null {
   const prefix = "LLVM-";
   const suffix = compareVersions(version, "3.7.0") >= 0 ? "-win64.exe" : "-win32.exe";
   if (compareVersions(version, "9.0.1") >= 0) {
@@ -158,7 +158,7 @@ function getWin32Url(version) {
   }
 }
 
-function getUrl(platform, version) {
+function getUrl(platform: string, version: string): string | null {
   switch (platform) {
     case "darwin":
       return getDarwinUrl(version);
@@ -175,7 +175,7 @@ function getUrl(platform, version) {
 // Action
 //================================================
 
-async function install(version, directory) {
+async function install(version: string, directory: string): Promise<void> {
   const platform = process.platform;
   if (!VERSIONS.has(version)) {
     throw new Error(`Unsupported target! (platform='${platform}', version='${version}')`);
@@ -215,7 +215,7 @@ async function install(version, directory) {
   console.log(`Installed LLVM and Clang ${version} (${fullVersion})!`);
 }
 
-async function run(version, directory, cached) {
+async function run(version: string, directory: string, cached: string): Promise<void> {
   if (cached === "true") {
     console.log(`Using cached LLVM and Clang ${version}...`);
   } else {
