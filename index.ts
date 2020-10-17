@@ -8,10 +8,14 @@ import * as path from "path";
 // Version
 //================================================
 
-function getVersions(full: string[]): Set<string> {
-  const versions = new Set(full);
+/**
+ * Gets the specific and minimum LLVM versions that can be used to refer to the
+ * supplied specific LLVM versions (e.g., `3`, `3.5`, `3.5.2` for `3.5.2`).
+ */
+function getVersions(specific: string[]): Set<string> {
+  const versions = new Set(specific);
 
-  for (const version of full) {
+  for (const version of specific) {
     versions.add(/^\d+/.exec(version)![0]);
     versions.add(/^\d+\.\d+/.exec(version)![0]);
   }
@@ -19,6 +23,7 @@ function getVersions(full: string[]): Set<string> {
   return versions;
 }
 
+/** The specific and minimum LLVM versions supported by this action. */
 const VERSIONS: Set<string> = getVersions([
   "3.5.0", "3.5.1", "3.5.2",
   "3.6.0", "3.6.1", "3.6.2",
@@ -36,6 +41,7 @@ const VERSIONS: Set<string> = getVersions([
   "11.0.0",
 ]);
 
+/** Gets the ordering of two (specific or minimum) LLVM versions. */
 function compareVersions(left: string, right: string): -1 | 0 | 1 {
   const leftComponents = left.split(".").map(c => parseInt(c, 10));
   const rightComponents = right.split(".").map(c => parseInt(c, 10));
@@ -54,7 +60,12 @@ function compareVersions(left: string, right: string): -1 | 0 | 1 {
   return 0;
 }
 
-function getFullVersions(version: string): string[] {
+/**
+ * Gets the specific LLVM versions supported by this action compatible with the
+ * supplied (specific or minimum) LLVM version in descending order of release
+ * (e.g., `5.0.2`, `5.0.1`, and `5.0.0` for `5`).
+ */
+function getSpecificVersions(version: string): string[] {
   return Array.from(VERSIONS)
     .filter(v => /^\d+\.\d+\.\d+$/.test(v) && v.startsWith(version))
     .sort()
@@ -65,16 +76,19 @@ function getFullVersions(version: string): string[] {
 // URL
 //================================================
 
-function getGithubUrl(version: string, prefix: string, suffix: string): string {
+/** Gets a LLVM download URL for GitHub. */
+function getGitHubUrl(version: string, prefix: string, suffix: string): string {
   const file = `${prefix}${version}${suffix}`;
   return `https://github.com/llvm/llvm-project/releases/download/llvmorg-${version}/${file}`;
 }
 
+/** Gets a LLVM download URL for https://releases.llvm.org. */
 function getReleaseUrl(version: string, prefix: string, suffix: string): string {
   const file = `${prefix}${version}${suffix}`;
   return `https://releases.llvm.org/${version}/${file}`;
 }
 
+/** The LLVM versions that were never released for the Darwin platform. */
 const DARWIN_MISSING: Set<string> = new Set([
   "3.5.1",
   "3.6.1",
@@ -88,6 +102,7 @@ const DARWIN_MISSING: Set<string> = new Set([
   "8.0.1",
 ]);
 
+/** Gets an LLVM download URL for the Darwin platform. */
 function getDarwinUrl(version: string): string | null {
   if (DARWIN_MISSING.has(version)) {
     return null;
@@ -97,12 +112,13 @@ function getDarwinUrl(version: string): string | null {
   const prefix = "clang+llvm-";
   const suffix = `-x86_64${darwin}.tar.xz`;
   if (compareVersions(version, "9.0.1") >= 0) {
-    return getGithubUrl(version, prefix, suffix);
+    return getGitHubUrl(version, prefix, suffix);
   } else {
     return getReleaseUrl(version, prefix, suffix);
   }
 }
 
+/** The (latest) Ubuntu versions for each LLVM version. */
 const UBUNTU: { [key: string]: string } = {
   "3.5.0": "-ubuntu-14.04",
   "3.5.1": "",
@@ -133,6 +149,7 @@ const UBUNTU: { [key: string]: string } = {
   "11.0.0": "-ubuntu-20.04",
 };
 
+/** Gets an LLVM download URL for the Linux (Ubuntu) platform. */
 function getLinuxUrl(version: string): string | null {
   const ubuntu = UBUNTU[version];
   if (!ubuntu) {
@@ -142,22 +159,24 @@ function getLinuxUrl(version: string): string | null {
   const prefix = "clang+llvm-";
   const suffix = `-x86_64-linux-gnu${ubuntu}.tar.xz`;
   if (compareVersions(version, "9.0.1") >= 0) {
-    return getGithubUrl(version, prefix, suffix);
+    return getGitHubUrl(version, prefix, suffix);
   } else {
     return getReleaseUrl(version, prefix, suffix);
   }
 }
 
+/** Gets an LLVM download URL for the Windows platform. */
 function getWin32Url(version: string): string | null {
   const prefix = "LLVM-";
   const suffix = compareVersions(version, "3.7.0") >= 0 ? "-win64.exe" : "-win32.exe";
   if (compareVersions(version, "9.0.1") >= 0) {
-    return getGithubUrl(version, prefix, suffix);
+    return getGitHubUrl(version, prefix, suffix);
   } else {
     return getReleaseUrl(version, prefix, suffix);
   }
 }
 
+/** Gets an LLVM download URL. */
 function getUrl(platform: string, version: string): string | null {
   switch (platform) {
     case "darwin":
@@ -171,59 +190,65 @@ function getUrl(platform: string, version: string): string | null {
   }
 }
 
-//================================================
-// Action
-//================================================
-
-async function install(version: string, directory: string): Promise<void> {
-  const platform = process.platform;
+/** Gets the most recent specific LLVM version for which there is a valid download URL. */
+function getSpecificVersionAndUrl(platform: string, version: string): [string, string] {
   if (!VERSIONS.has(version)) {
     throw new Error(`Unsupported target! (platform='${platform}', version='${version}')`);
   }
 
-  let url;
-  let fullVersion;
-  for (const v of getFullVersions(version)) {
-    url = getUrl(platform, v);
+  for (const specificVersion of getSpecificVersions(version)) {
+    const url = getUrl(platform, specificVersion);
     if (url) {
-      fullVersion = v;
-      core.setOutput("version", fullVersion);
-      break;
+      return [specificVersion, url];
     }
   }
 
-  if (!url) {
-    throw new Error(`Unsupported target! (platform='${platform}', version='${version}')`);
-  }
+  throw new Error(`Unsupported target! (platform='${platform}', version='${version}')`);
+}
 
-  console.log(`Installing LLVM and Clang ${version} (${fullVersion})...`);
+//================================================
+// Action
+//================================================
+
+interface Options {
+  version: string,
+  directory: string,
+  cached: string,
+}
+
+async function install(options: Options): Promise<void> {
+  const platform = process.platform;
+  const [specificVersion, url] = getSpecificVersionAndUrl(platform, options.version);
+  core.setOutput("version", specificVersion);
+
+  console.log(`Installing LLVM and Clang ${options.version} (${specificVersion})...`);
   console.log(`Downloading and extracting '${url}'...`);
   const archive = await tc.downloadTool(url);
 
   let exit;
   if (platform === "win32") {
-    exit = await exec.exec("7z", ["x", archive, `-o${directory}`]);
+    exit = await exec.exec("7z", ["x", archive, `-o${options.directory}`]);
   } else {
-    await io.mkdirP(directory);
-    exit = await exec.exec("tar", ["xf", archive, "-C", directory, "--strip-components=1"]);
+    await io.mkdirP(options.directory);
+    exit = await exec.exec("tar", ["xf", archive, "-C", options.directory, "--strip-components=1"]);
   }
 
   if (exit !== 0) {
     throw new Error("Could not extract LLVM and Clang binaries.");
   }
 
-  console.log(`Installed LLVM and Clang ${version} (${fullVersion})!`);
+  console.log(`Installed LLVM and Clang ${options.version} (${specificVersion})!`);
 }
 
-async function run(version: string, directory: string, cached: string): Promise<void> {
-  if (cached === "true") {
-    console.log(`Using cached LLVM and Clang ${version}...`);
+async function run(options: Options): Promise<void> {
+  if (options.cached === "true") {
+    console.log(`Using cached LLVM and Clang ${options.version}...`);
   } else {
-    await install(version, directory);
+    await install(options);
   }
 
-  const bin = path.resolve(path.join(directory, "bin"));
-  const lib = path.resolve(path.join(directory, "lib"));
+  const bin = path.resolve(path.join(options.directory, "bin"));
+  const lib = path.resolve(path.join(options.directory, "lib"));
   core.addPath(bin);
   core.exportVariable("LD_LIBRARY_PATH", `${lib}:${process.env.LD_LIBRARY_PATH || ""}`);
   core.exportVariable("DYLD_LIBRARY_PATH", `${lib}:${process.env.DYLD_LIBRARY_PATH || ""}`);
@@ -233,7 +258,8 @@ try {
   const version = core.getInput("version");
   const directory = core.getInput("directory");
   const cached = core.getInput("cached") || "false";
-  run(version, directory, cached);
+  const options = { version, directory, cached };
+  run(options);
 } catch (error) {
   console.error(error.stack);
   core.setFailed(error.message);

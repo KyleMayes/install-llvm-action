@@ -4832,15 +4832,20 @@ var path = __webpack_require__(622);
 //================================================
 // Version
 //================================================
-function getVersions(full) {
-    var versions = new Set(full);
-    for (var _i = 0, full_1 = full; _i < full_1.length; _i++) {
-        var version = full_1[_i];
+/**
+ * Gets the specific and minimum LLVM versions that can be used to refer to the
+ * supplied specific LLVM versions (e.g., `3`, `3.5`, `3.5.2` for `3.5.2`).
+ */
+function getVersions(specific) {
+    var versions = new Set(specific);
+    for (var _i = 0, specific_1 = specific; _i < specific_1.length; _i++) {
+        var version = specific_1[_i];
         versions.add(/^\d+/.exec(version)[0]);
         versions.add(/^\d+\.\d+/.exec(version)[0]);
     }
     return versions;
 }
+/** The specific and minimum LLVM versions supported by this action. */
 var VERSIONS = getVersions([
     "3.5.0", "3.5.1", "3.5.2",
     "3.6.0", "3.6.1", "3.6.2",
@@ -4857,6 +4862,7 @@ var VERSIONS = getVersions([
     "10.0.0", "10.0.1",
     "11.0.0",
 ]);
+/** Gets the ordering of two (specific or minimum) LLVM versions. */
 function compareVersions(left, right) {
     var leftComponents = left.split(".").map(function (c) { return parseInt(c, 10); });
     var rightComponents = right.split(".").map(function (c) { return parseInt(c, 10); });
@@ -4873,7 +4879,12 @@ function compareVersions(left, right) {
     }
     return 0;
 }
-function getFullVersions(version) {
+/**
+ * Gets the specific LLVM versions supported by this action compatible with the
+ * supplied (specific or minimum) LLVM version in descending order of release
+ * (e.g., `5.0.2`, `5.0.1`, and `5.0.0` for `5`).
+ */
+function getSpecificVersions(version) {
     return Array.from(VERSIONS)
         .filter(function (v) { return /^\d+\.\d+\.\d+$/.test(v) && v.startsWith(version); })
         .sort()
@@ -4882,14 +4893,17 @@ function getFullVersions(version) {
 //================================================
 // URL
 //================================================
-function getGithubUrl(version, prefix, suffix) {
+/** Gets a LLVM download URL for GitHub. */
+function getGitHubUrl(version, prefix, suffix) {
     var file = "" + prefix + version + suffix;
     return "https://github.com/llvm/llvm-project/releases/download/llvmorg-" + version + "/" + file;
 }
+/** Gets a LLVM download URL for https://releases.llvm.org. */
 function getReleaseUrl(version, prefix, suffix) {
     var file = "" + prefix + version + suffix;
     return "https://releases.llvm.org/" + version + "/" + file;
 }
+/** The LLVM versions that were never released for the Darwin platform. */
 var DARWIN_MISSING = new Set([
     "3.5.1",
     "3.6.1",
@@ -4902,6 +4916,7 @@ var DARWIN_MISSING = new Set([
     "7.1.0",
     "8.0.1",
 ]);
+/** Gets an LLVM download URL for the Darwin platform. */
 function getDarwinUrl(version) {
     if (DARWIN_MISSING.has(version)) {
         return null;
@@ -4910,12 +4925,13 @@ function getDarwinUrl(version) {
     var prefix = "clang+llvm-";
     var suffix = "-x86_64" + darwin + ".tar.xz";
     if (compareVersions(version, "9.0.1") >= 0) {
-        return getGithubUrl(version, prefix, suffix);
+        return getGitHubUrl(version, prefix, suffix);
     }
     else {
         return getReleaseUrl(version, prefix, suffix);
     }
 }
+/** The (latest) Ubuntu versions for each LLVM version. */
 var UBUNTU = {
     "3.5.0": "-ubuntu-14.04",
     "3.5.1": "",
@@ -4945,6 +4961,7 @@ var UBUNTU = {
     "10.0.1": "-ubuntu-18.04",
     "11.0.0": "-ubuntu-20.04",
 };
+/** Gets an LLVM download URL for the Linux (Ubuntu) platform. */
 function getLinuxUrl(version) {
     var ubuntu = UBUNTU[version];
     if (!ubuntu) {
@@ -4953,22 +4970,24 @@ function getLinuxUrl(version) {
     var prefix = "clang+llvm-";
     var suffix = "-x86_64-linux-gnu" + ubuntu + ".tar.xz";
     if (compareVersions(version, "9.0.1") >= 0) {
-        return getGithubUrl(version, prefix, suffix);
+        return getGitHubUrl(version, prefix, suffix);
     }
     else {
         return getReleaseUrl(version, prefix, suffix);
     }
 }
+/** Gets an LLVM download URL for the Windows platform. */
 function getWin32Url(version) {
     var prefix = "LLVM-";
     var suffix = compareVersions(version, "3.7.0") >= 0 ? "-win64.exe" : "-win32.exe";
     if (compareVersions(version, "9.0.1") >= 0) {
-        return getGithubUrl(version, prefix, suffix);
+        return getGitHubUrl(version, prefix, suffix);
     }
     else {
         return getReleaseUrl(version, prefix, suffix);
     }
 }
+/** Gets an LLVM download URL. */
 function getUrl(platform, version) {
     switch (platform) {
         case "darwin":
@@ -4981,45 +5000,43 @@ function getUrl(platform, version) {
             return null;
     }
 }
-//================================================
-// Action
-//================================================
-function install(version, directory) {
+/** Gets the most recent specific LLVM version for which there is a valid download URL. */
+function getSpecificVersionAndUrl(platform, version) {
+    if (!VERSIONS.has(version)) {
+        throw new Error("Unsupported target! (platform='" + platform + "', version='" + version + "')");
+    }
+    for (var _i = 0, _a = getSpecificVersions(version); _i < _a.length; _i++) {
+        var specificVersion = _a[_i];
+        var url = getUrl(platform, specificVersion);
+        if (url) {
+            return [specificVersion, url];
+        }
+    }
+    throw new Error("Unsupported target! (platform='" + platform + "', version='" + version + "')");
+}
+function install(options) {
     return __awaiter(this, void 0, void 0, function () {
-        var platform, url, fullVersion, _i, _a, v, archive, exit;
+        var platform, _a, specificVersion, url, archive, exit;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     platform = process.platform;
-                    if (!VERSIONS.has(version)) {
-                        throw new Error("Unsupported target! (platform='" + platform + "', version='" + version + "')");
-                    }
-                    for (_i = 0, _a = getFullVersions(version); _i < _a.length; _i++) {
-                        v = _a[_i];
-                        url = getUrl(platform, v);
-                        if (url) {
-                            fullVersion = v;
-                            core.setOutput("version", fullVersion);
-                            break;
-                        }
-                    }
-                    if (!url) {
-                        throw new Error("Unsupported target! (platform='" + platform + "', version='" + version + "')");
-                    }
-                    console.log("Installing LLVM and Clang " + version + " (" + fullVersion + ")...");
+                    _a = getSpecificVersionAndUrl(platform, options.version), specificVersion = _a[0], url = _a[1];
+                    core.setOutput("version", specificVersion);
+                    console.log("Installing LLVM and Clang " + options.version + " (" + specificVersion + ")...");
                     console.log("Downloading and extracting '" + url + "'...");
                     return [4 /*yield*/, tc.downloadTool(url)];
                 case 1:
                     archive = _b.sent();
                     if (!(platform === "win32")) return [3 /*break*/, 3];
-                    return [4 /*yield*/, exec.exec("7z", ["x", archive, "-o" + directory])];
+                    return [4 /*yield*/, exec.exec("7z", ["x", archive, "-o" + options.directory])];
                 case 2:
                     exit = _b.sent();
                     return [3 /*break*/, 6];
-                case 3: return [4 /*yield*/, io.mkdirP(directory)];
+                case 3: return [4 /*yield*/, io.mkdirP(options.directory)];
                 case 4:
                     _b.sent();
-                    return [4 /*yield*/, exec.exec("tar", ["xf", archive, "-C", directory, "--strip-components=1"])];
+                    return [4 /*yield*/, exec.exec("tar", ["xf", archive, "-C", options.directory, "--strip-components=1"])];
                 case 5:
                     exit = _b.sent();
                     _b.label = 6;
@@ -5027,28 +5044,28 @@ function install(version, directory) {
                     if (exit !== 0) {
                         throw new Error("Could not extract LLVM and Clang binaries.");
                     }
-                    console.log("Installed LLVM and Clang " + version + " (" + fullVersion + ")!");
+                    console.log("Installed LLVM and Clang " + options.version + " (" + specificVersion + ")!");
                     return [2 /*return*/];
             }
         });
     });
 }
-function run(version, directory, cached) {
+function run(options) {
     return __awaiter(this, void 0, void 0, function () {
         var bin, lib;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!(cached === "true")) return [3 /*break*/, 1];
-                    console.log("Using cached LLVM and Clang " + version + "...");
+                    if (!(options.cached === "true")) return [3 /*break*/, 1];
+                    console.log("Using cached LLVM and Clang " + options.version + "...");
                     return [3 /*break*/, 3];
-                case 1: return [4 /*yield*/, install(version, directory)];
+                case 1: return [4 /*yield*/, install(options)];
                 case 2:
                     _a.sent();
                     _a.label = 3;
                 case 3:
-                    bin = path.resolve(path.join(directory, "bin"));
-                    lib = path.resolve(path.join(directory, "lib"));
+                    bin = path.resolve(path.join(options.directory, "bin"));
+                    lib = path.resolve(path.join(options.directory, "lib"));
                     core.addPath(bin);
                     core.exportVariable("LD_LIBRARY_PATH", lib + ":" + (process.env.LD_LIBRARY_PATH || ""));
                     core.exportVariable("DYLD_LIBRARY_PATH", lib + ":" + (process.env.DYLD_LIBRARY_PATH || ""));
@@ -5061,7 +5078,8 @@ try {
     var version = core.getInput("version");
     var directory = core.getInput("directory");
     var cached = core.getInput("cached") || "false";
-    run(version, directory, cached);
+    var options = { version: version, directory: directory, cached: cached };
+    run(options);
 }
 catch (error) {
     console.error(error.stack);
