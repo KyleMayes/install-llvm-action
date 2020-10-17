@@ -146,7 +146,7 @@ const UBUNTU: { [key: string]: string } = {
   "9.0.0": "-ubuntu-18.04",
   "9.0.1": "-ubuntu-16.04",
   "10.0.0": "-ubuntu-18.04",
-  "10.0.1": "-ubuntu-18.04",
+  "10.0.1": "-ubuntu-16.04",
   "11.0.0": "-ubuntu-20.04",
 };
 
@@ -166,8 +166,17 @@ function getLinuxUrl(version: string): string | null {
   }
 }
 
+/** The LLVM versions that were never released for the Windows platform. */
+const WIN32_MISSING: Set<string> = new Set([
+  "10.0.1",
+]);
+
 /** Gets an LLVM download URL for the Windows platform. */
 function getWin32Url(version: string): string | null {
+  if (WIN32_MISSING.has(version)) {
+    return null;
+  }
+
   const prefix = "LLVM-";
   const suffix = compareVersions(version, "3.7.0") >= 0 ? "-win64.exe" : "-win32.exe";
   if (compareVersions(version, "9.0.1") >= 0) {

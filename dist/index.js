@@ -4959,7 +4959,7 @@ var UBUNTU = {
     "9.0.0": "-ubuntu-18.04",
     "9.0.1": "-ubuntu-16.04",
     "10.0.0": "-ubuntu-18.04",
-    "10.0.1": "-ubuntu-18.04",
+    "10.0.1": "-ubuntu-16.04",
     "11.0.0": "-ubuntu-20.04",
 };
 /** Gets an LLVM download URL for the Linux (Ubuntu) platform. */
@@ -4977,8 +4977,15 @@ function getLinuxUrl(version) {
         return getReleaseUrl(version, prefix, suffix);
     }
 }
+/** The LLVM versions that were never released for the Windows platform. */
+var WIN32_MISSING = new Set([
+    "10.0.1",
+]);
 /** Gets an LLVM download URL for the Windows platform. */
 function getWin32Url(version) {
+    if (WIN32_MISSING.has(version)) {
+        return null;
+    }
     var prefix = "LLVM-";
     var suffix = compareVersions(version, "3.7.0") >= 0 ? "-win64.exe" : "-win32.exe";
     if (compareVersions(version, "9.0.1") >= 0) {
