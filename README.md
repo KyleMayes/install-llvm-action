@@ -20,6 +20,15 @@ or just `3`. When specifying a minimum version, the highest compatible version
 supported by the platform will be installed (e.g., `3.6.2` for `3.6` or `3.9.1`
 for `3`).
 
+### `ubuntu-version`
+
+The version override of Ubuntu to use for the Linux platform.
+
+For a given LLVM and Clang version, there are sometimes multiple binaries
+available targeting different versions of Ubuntu (e.g., `16.04` and `18.04`).
+By default this action will use the latest of these Ubuntu versions. This
+option can be used to override this default and pick an earlier version.
+
 ### `directory`
 
 **Required** The directory to install LLVM and Clang binaries to.

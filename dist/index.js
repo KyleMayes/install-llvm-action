@@ -4963,8 +4963,8 @@ var UBUNTU = {
     "11.0.0": "-ubuntu-20.04",
 };
 /** Gets an LLVM download URL for the Linux (Ubuntu) platform. */
-function getLinuxUrl(version) {
-    var ubuntu = UBUNTU[version];
+function getLinuxUrl(version, ubuntuVersion) {
+    var ubuntu = ubuntuVersion ? "-ubuntu-" + ubuntuVersion : UBUNTU[version];
     if (!ubuntu) {
         return null;
     }
@@ -4996,12 +4996,12 @@ function getWin32Url(version) {
     }
 }
 /** Gets an LLVM download URL. */
-function getUrl(platform, version) {
+function getUrl(platform, version, ubuntuVersion) {
     switch (platform) {
         case "darwin":
             return getDarwinUrl(version);
         case "linux":
-            return getLinuxUrl(version);
+            return getLinuxUrl(version, ubuntuVersion);
         case "win32":
             return getWin32Url(version);
         default:
@@ -5009,13 +5009,13 @@ function getUrl(platform, version) {
     }
 }
 /** Gets the most recent specific LLVM version for which there is a valid download URL. */
-function getSpecificVersionAndUrl(platform, version) {
+function getSpecificVersionAndUrl(platform, version, ubuntuVersion) {
     if (!VERSIONS.has(version)) {
         throw new Error("Unsupported target! (platform='" + platform + "', version='" + version + "')");
     }
     for (var _i = 0, _a = getSpecificVersions(version); _i < _a.length; _i++) {
         var specificVersion = _a[_i];
-        var url = getUrl(platform, specificVersion);
+        var url = getUrl(platform, specificVersion, ubuntuVersion);
         if (url) {
             return [specificVersion, url];
         }
@@ -5029,7 +5029,7 @@ function install(options) {
             switch (_b.label) {
                 case 0:
                     platform = process.platform;
-                    _a = getSpecificVersionAndUrl(platform, options.version), specificVersion = _a[0], url = _a[1];
+                    _a = getSpecificVersionAndUrl(platform, options.version, options.ubuntuVersion), specificVersion = _a[0], url = _a[1];
                     core.setOutput("version", specificVersion);
                     console.log("Installing LLVM and Clang " + options.version + " (" + specificVersion + ")...");
                     console.log("Downloading and extracting '" + url + "'...");
@@ -5082,12 +5082,13 @@ function run(options) {
         });
     });
 }
-function test(platform, version) {
+function test(platform, version, ubuntuVersion) {
     return __awaiter(this, void 0, void 0, function () {
         var _a, specificVersion, url;
         return __generator(this, function (_b) {
-            _a = getSpecificVersionAndUrl(platform, version), specificVersion = _a[0], url = _a[1];
+            _a = getSpecificVersionAndUrl(platform, version, ubuntuVersion), specificVersion = _a[0], url = _a[1];
             console.log("Version: " + version + " => " + specificVersion);
+            console.log("Ubuntu version: " + (ubuntuVersion || "<default>"));
             console.log("URL: " + url);
             return [2 /*return*/, new Promise(function (resolve, reject) {
                     https.get(url, function (res) {
@@ -5108,15 +5109,17 @@ try {
     var start = process.argv.indexOf("test");
     if (start === -1) {
         var version = core.getInput("version");
+        var ubuntuVersion = core.getInput("ubuntu-version");
         var directory = core.getInput("directory");
         var cached = core.getInput("cached") || "false";
-        var options = { version: version, directory: directory, cached: cached };
+        var options = { version: version, ubuntuVersion: ubuntuVersion, directory: directory, cached: cached };
         run(options);
     }
     else {
         var platform = process.argv[start + 1];
         var version = process.argv[start + 2];
-        test(platform, version);
+        var ubuntuVersion = process.argv[start + 3];
+        test(platform, version, ubuntuVersion);
     }
 }
 catch (error) {
