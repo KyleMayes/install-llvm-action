@@ -67,7 +67,7 @@ minimum version like `3.6` or `3`.
   uses: KyleMayes/install-llvm-action@v1
   with:
     version: "10.0"
-    directory: ~/.clang
+    directory: ${{ runner.temp }}/llvm
 ```
 
 ## Example Usage (with caching)
@@ -77,12 +77,12 @@ minimum version like `3.6` or `3`.
   id: cache-llvm
   uses: actions/cache@v2
   with:
-    path: ~/.clang
+    path: ${{ runner.temp }}/llvm
     key: llvm-10.0
 - name: Install LLVM and Clang
   uses: KyleMayes/install-llvm-action@v1
   with:
     version: "10.0"
-    directory: ~/.clang
+    directory: ${{ runner.temp }}/llvm
     cached: ${{ steps.cache-llvm.outputs.cache-hit }}
 ```
