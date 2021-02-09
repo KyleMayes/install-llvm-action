@@ -47,7 +47,7 @@ const VERSIONS: Set<string> = getVersions([
   "8.0.0", "8.0.1",
   "9.0.0", "9.0.1",
   "10.0.0", "10.0.1",
-  "11.0.0",
+  "11.0.0", "11.0.1",
 ]);
 
 /** Gets the ordering of two (specific or minimum) LLVM versions. */
@@ -109,6 +109,7 @@ const DARWIN_MISSING: Set<string> = new Set([
   "7.0.1",
   "7.1.0",
   "8.0.1",
+  "11.0.1",
 ]);
 
 /** Gets an LLVM download URL for the Darwin platform. */
@@ -156,6 +157,7 @@ const UBUNTU: { [key: string]: string } = {
   "10.0.0": "-ubuntu-18.04",
   "10.0.1": "-ubuntu-16.04",
   "11.0.0": "-ubuntu-20.04",
+  "11.0.1": "-ubuntu-16.04",
 };
 
 /** The latest supported LLVM version for the Linux (Ubuntu) platform. */
