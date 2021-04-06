@@ -4861,7 +4861,7 @@ var VERSIONS = getVersions([
     "8.0.0", "8.0.1",
     "9.0.0", "9.0.1",
     "10.0.0", "10.0.1",
-    "11.0.0", "11.0.1",
+    "11.0.0", "11.0.1", "11.1.0",
 ]);
 /** Gets the ordering of two (specific or minimum) LLVM versions. */
 function compareVersions(left, right) {
@@ -4917,6 +4917,7 @@ var DARWIN_MISSING = new Set([
     "7.1.0",
     "8.0.1",
     "11.0.1",
+    "11.1.0",
 ]);
 /** Gets an LLVM download URL for the Darwin platform. */
 function getDarwinUrl(version, options) {
@@ -4963,6 +4964,7 @@ var UBUNTU = {
     "10.0.1": "-ubuntu-16.04",
     "11.0.0": "-ubuntu-20.04",
     "11.0.1": "-ubuntu-16.04",
+    "11.1.0": "-ubuntu-16.04",
 };
 /** The latest supported LLVM version for the Linux (Ubuntu) platform. */
 var MAX_UBUNTU = "11.0.0";
