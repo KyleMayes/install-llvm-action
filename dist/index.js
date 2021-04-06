@@ -4916,6 +4916,7 @@ var DARWIN_MISSING = new Set([
     "7.0.1",
     "7.1.0",
     "8.0.1",
+    "11.0.1",
 ]);
 /** Gets an LLVM download URL for the Darwin platform. */
 function getDarwinUrl(version, options) {
@@ -4961,7 +4962,7 @@ var UBUNTU = {
     "10.0.0": "-ubuntu-18.04",
     "10.0.1": "-ubuntu-16.04",
     "11.0.0": "-ubuntu-20.04",
-    "11.0.1": "-ubuntu-18.04",
+    "11.0.1": "-ubuntu-16.04",
 };
 /** The latest supported LLVM version for the Linux (Ubuntu) platform. */
 var MAX_UBUNTU = "11.0.0";
