@@ -12,7 +12,11 @@ Released under the Apache License 2.0.
 
 **Required** The version of LLVM and Clang binaries to install.
 
-This can be a specific version such as `3.6.2` or a minimum version like `3.6` or just `3`. When specifying a minimum version, the highest compatible version supported by the platform will be installed (e.g., `3.6.2` for `3.6` or `3.9.1` for `3`).
+This can be a specific LLVM and Clang version such as `3.6.2` or a minimum version like `3.6` or just `3`. When specifying a minimum version, the highest compatible version supported by the platform will be installed (e.g., `3.6.2` for `3.6` or `3.9.1` for `3`).
+
+### `directory`
+
+**Required** The directory to install LLVM and Clang binaries to.
 
 ### `force-version`
 
@@ -26,11 +30,7 @@ This action will by default reject unsupported LLVM and Clang versions. For exam
 
 The version override of Ubuntu to use for the Linux platform.
 
-For a given LLVM and Clang version, there are sometimes multiple binaries available targeting different versions of Ubuntu (e.g., `16.04` and `18.04`). By default this action will use the latest of these Ubuntu versions. This option can be used to override this default and pick an earlier version.
-
-### `directory`
-
-**Required** The directory to install LLVM and Clang binaries to.
+For a given LLVM and Clang version, there are sometimes multiple binaries available targeting different versions of Ubuntu (e.g., `16.04` and `18.04`). By default this action will download the binaries for the most recent [LTS version](https://ubuntu.com/blog/what-is-an-ubuntu-lts-release) binaries are available for. This option can be used to override this default and pick a different version.
 
 ### `cached`
 
@@ -56,17 +56,19 @@ This will only differ from the value of the `version` input when specifying a mi
 
 ## Example Usage (with caching)
 
+**Note:** Since version 9.0.1, LLVM and Clang binaries are [hosted on GitHub](https://github.com/llvm/llvm-project/releases). If you are targeting this or a later version, caching the binaries will almost certainly be slower than just downloading them directly each time since in either case they are coming from GitHub's servers and by not caching them your pipeline will have fewer steps.
+
 ```yml
 - name: Cache LLVM and Clang
   id: cache-llvm
   uses: actions/cache@v2
   with:
     path: ${{ runner.temp }}/llvm
-    key: llvm-10.0
+    key: llvm-3.5
 - name: Install LLVM and Clang
   uses: KyleMayes/install-llvm-action@v1
   with:
-    version: "10.0"
+    version: "3.5"
     directory: ${{ runner.temp }}/llvm
     cached: ${{ steps.cache-llvm.outputs.cache-hit }}
 ```
