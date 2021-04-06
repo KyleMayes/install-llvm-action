@@ -5081,7 +5081,7 @@ function install(options) {
 }
 function run(options) {
     return __awaiter(this, void 0, void 0, function () {
-        var bin, lib;
+        var bin, lib, ld, dyld;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -5096,8 +5096,10 @@ function run(options) {
                     bin = path.resolve(path.join(options.directory, "bin"));
                     lib = path.resolve(path.join(options.directory, "lib"));
                     core.addPath(bin);
-                    core.exportVariable("LD_LIBRARY_PATH", lib + ":" + (process.env.LD_LIBRARY_PATH || ""));
-                    core.exportVariable("DYLD_LIBRARY_PATH", lib + ":" + (process.env.DYLD_LIBRARY_PATH || ""));
+                    ld = process.env.LD_LIBRARY_PATH;
+                    dyld = process.env.DYLD_LIBRARY_PATH;
+                    core.exportVariable("LD_LIBRARY_PATH", "" + lib + path.delimiter + ld);
+                    core.exportVariable("DYLD_LIBRARY_PATH", "" + lib + path.delimiter + dyld);
                     return [2 /*return*/];
             }
         });

@@ -280,9 +280,14 @@ async function run(options: Options): Promise<void> {
 
   const bin = path.resolve(path.join(options.directory, "bin"));
   const lib = path.resolve(path.join(options.directory, "lib"));
+
   core.addPath(bin);
-  core.exportVariable("LD_LIBRARY_PATH", `${lib}:${process.env.LD_LIBRARY_PATH || ""}`);
-  core.exportVariable("DYLD_LIBRARY_PATH", `${lib}:${process.env.DYLD_LIBRARY_PATH || ""}`);
+
+  const ld = process.env.LD_LIBRARY_PATH;
+  const dyld = process.env.DYLD_LIBRARY_PATH;
+
+  core.exportVariable("LD_LIBRARY_PATH", `${lib}${path.delimiter}${ld}`);
+  core.exportVariable("DYLD_LIBRARY_PATH", `${lib}${path.delimiter}${dyld}`);
 }
 
 async function test(platform: string, options: Options): Promise<void> {
