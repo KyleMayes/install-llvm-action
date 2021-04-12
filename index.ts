@@ -309,25 +309,29 @@ async function test(platform: string, options: Options): Promise<void> {
   });
 }
 
-try {
-  const start = process.argv.indexOf("test");
-  if (start === -1) {
-    const version = core.getInput("version");
-    const forceVersion = (core.getInput("force-version") || "").toLowerCase() === "true";
-    const ubuntuVersion = core.getInput("ubuntu-version");
-    const directory = core.getInput("directory");
-    const cached = (core.getInput("cached") || "").toLowerCase() === "true";
-    const options = { version, forceVersion, ubuntuVersion, directory, cached };
-    run(options);
-  } else {
-    const platform = process.argv[start + 1];
-    const version = process.argv[start + 2];
-    const forceVersion = (process.argv[start + 3] || "").toLowerCase() === "true";
-    const ubuntuVersion = process.argv[start + 4];
-    const options = { version, forceVersion, ubuntuVersion, directory: "", cached: false };
-    test(platform, options);
+async function main() {
+  try {
+    const start = process.argv.indexOf("test");
+    if (start === -1) {
+      const version = core.getInput("version");
+      const forceVersion = (core.getInput("force-version") || "").toLowerCase() === "true";
+      const ubuntuVersion = core.getInput("ubuntu-version");
+      const directory = core.getInput("directory");
+      const cached = (core.getInput("cached") || "").toLowerCase() === "true";
+      const options = { version, forceVersion, ubuntuVersion, directory, cached };
+      await run(options);
+    } else {
+      const platform = process.argv[start + 1];
+      const version = process.argv[start + 2];
+      const forceVersion = (process.argv[start + 3] || "").toLowerCase() === "true";
+      const ubuntuVersion = process.argv[start + 4];
+      const options = { version, forceVersion, ubuntuVersion, directory: "", cached: false };
+      await test(platform, options);
+    }
+  } catch (error) {
+    console.error(error.stack);
+    core.setFailed(error.message);
   }
-} catch (error) {
-  console.error(error.stack);
-  core.setFailed(error.message);
 }
+
+main();

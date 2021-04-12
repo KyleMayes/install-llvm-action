@@ -5129,30 +5129,47 @@ function test(platform, options) {
         });
     });
 }
-try {
-    var start = process.argv.indexOf("test");
-    if (start === -1) {
-        var version = core.getInput("version");
-        var forceVersion = (core.getInput("force-version") || "").toLowerCase() === "true";
-        var ubuntuVersion = core.getInput("ubuntu-version");
-        var directory = core.getInput("directory");
-        var cached = (core.getInput("cached") || "").toLowerCase() === "true";
-        var options = { version: version, forceVersion: forceVersion, ubuntuVersion: ubuntuVersion, directory: directory, cached: cached };
-        run(options);
-    }
-    else {
-        var platform = process.argv[start + 1];
-        var version = process.argv[start + 2];
-        var forceVersion = (process.argv[start + 3] || "").toLowerCase() === "true";
-        var ubuntuVersion = process.argv[start + 4];
-        var options = { version: version, forceVersion: forceVersion, ubuntuVersion: ubuntuVersion, directory: "", cached: false };
-        test(platform, options);
-    }
+function main() {
+    return __awaiter(this, void 0, void 0, function () {
+        var start, version, forceVersion, ubuntuVersion, directory, cached, options, platform, version, forceVersion, ubuntuVersion, options, error_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 5, , 6]);
+                    start = process.argv.indexOf("test");
+                    if (!(start === -1)) return [3 /*break*/, 2];
+                    version = core.getInput("version");
+                    forceVersion = (core.getInput("force-version") || "").toLowerCase() === "true";
+                    ubuntuVersion = core.getInput("ubuntu-version");
+                    directory = core.getInput("directory");
+                    cached = (core.getInput("cached") || "").toLowerCase() === "true";
+                    options = { version: version, forceVersion: forceVersion, ubuntuVersion: ubuntuVersion, directory: directory, cached: cached };
+                    return [4 /*yield*/, run(options)];
+                case 1:
+                    _a.sent();
+                    return [3 /*break*/, 4];
+                case 2:
+                    platform = process.argv[start + 1];
+                    version = process.argv[start + 2];
+                    forceVersion = (process.argv[start + 3] || "").toLowerCase() === "true";
+                    ubuntuVersion = process.argv[start + 4];
+                    options = { version: version, forceVersion: forceVersion, ubuntuVersion: ubuntuVersion, directory: "", cached: false };
+                    return [4 /*yield*/, test(platform, options)];
+                case 3:
+                    _a.sent();
+                    _a.label = 4;
+                case 4: return [3 /*break*/, 6];
+                case 5:
+                    error_1 = _a.sent();
+                    console.error(error_1.stack);
+                    core.setFailed(error_1.message);
+                    return [3 /*break*/, 6];
+                case 6: return [2 /*return*/];
+            }
+        });
+    });
 }
-catch (error) {
-    console.error(error.stack);
-    core.setFailed(error.message);
-}
+main();
 
 
 /***/ }),
