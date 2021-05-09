@@ -4936,6 +4936,7 @@ var VERSIONS = getVersions([
     "9.0.0", "9.0.1",
     "10.0.0", "10.0.1",
     "11.0.0", "11.0.1", "11.1.0",
+    "12.0.0",
 ]);
 /** Gets the ordering of two (specific or minimum) LLVM versions. */
 function compareVersions(left, right) {
@@ -5039,9 +5040,10 @@ var UBUNTU = {
     "11.0.0": "-ubuntu-20.04",
     "11.0.1": "-ubuntu-16.04",
     "11.1.0": "-ubuntu-16.04",
+    "12.0.0": "-ubuntu-20.04",
 };
 /** The latest supported LLVM version for the Linux (Ubuntu) platform. */
-var MAX_UBUNTU = "11.0.0";
+var MAX_UBUNTU = "12.0.0";
 /** Gets an LLVM download URL for the Linux (Ubuntu) platform. */
 function getLinuxUrl(version, options) {
     var ubuntu;
