@@ -16,7 +16,7 @@ This can be a specific LLVM and Clang version such as `3.6.2` or a minimum versi
 
 ### `directory`
 
-**Required** The directory to install LLVM and Clang binaries to.
+The directory to install LLVM and Clang binaries to. If not provided it uses `"C:/Program Files/LLVM"` on Windows, and `~/llvm` on other operating systems.
 
 ### `force-version`
 
@@ -45,6 +45,15 @@ The full version of LLVM and Clang binaries installed.
 This will only differ from the value of the `version` input when specifying a minimum version like `3.6` or `3`.
 
 ## Example Usage
+
+```yml
+- name: Install LLVM and Clang
+  uses: KyleMayes/install-llvm-action@v1
+  with:
+    version: "10.0"
+```
+
+## Example with providing an installation directory:
 
 ```yml
 - name: Install LLVM and Clang

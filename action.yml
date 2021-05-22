@@ -17,7 +17,7 @@ inputs:
     required: false
   directory:
     description: "The directory to install LLVM and Clang binaries to."
-    required: true
+    required: false
   cached:
     description: "Whether the LLVM and Clang binaries were cached."
     required: false

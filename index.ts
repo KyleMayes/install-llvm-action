@@ -274,6 +274,9 @@ async function install(options: Options): Promise<void> {
 }
 
 async function run(options: Options): Promise<void> {
+  if (!options.directory) {
+    options.directory =  process.platform === "win32" ? "C:/Program Files/LLVM" : "~/llvm";
+  }
   if (options.cached) {
     console.log(`Using cached LLVM and Clang ${options.version}...`);
   } else {
