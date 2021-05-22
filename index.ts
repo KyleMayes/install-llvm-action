@@ -291,6 +291,7 @@ async function run(options: Options): Promise<void> {
   const ld = process.env.LD_LIBRARY_PATH;
   const dyld = process.env.DYLD_LIBRARY_PATH;
 
+  core.exportVariable("LLVM_PATH", options.directory);
   core.exportVariable("LD_LIBRARY_PATH", `${lib}${path.delimiter}${ld}`);
   core.exportVariable("DYLD_LIBRARY_PATH", `${lib}${path.delimiter}${dyld}`);
 }

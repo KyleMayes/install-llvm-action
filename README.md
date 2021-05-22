@@ -18,6 +18,8 @@ This can be a specific LLVM and Clang version such as `3.6.2` or a minimum versi
 
 The directory to install LLVM and Clang binaries to. If not provided it uses `"C:/Program Files/LLVM"` on Windows, and `~/llvm` on other operating systems.
 
+The action sets `LLVM_PATH` environment variable, which allows you to refer to installation path in the subsequent jobs if needed (e.g. via `${{ env.LLVM_PATH }}`).
+
 ### `force-version`
 
 Whether to accept unsupported LLVM and Clang versions.
