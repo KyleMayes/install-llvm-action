@@ -288,8 +288,8 @@ async function run(options: Options): Promise<void> {
 
   core.addPath(bin);
 
-  const ld = process.env.LD_LIBRARY_PATH;
-  const dyld = process.env.DYLD_LIBRARY_PATH;
+  const ld = process.env.LD_LIBRARY_PATH ?? "";
+  const dyld = process.env.DYLD_LIBRARY_PATH ?? "";
 
   core.exportVariable("LLVM_PATH", options.directory);
   core.exportVariable("LD_LIBRARY_PATH", `${lib}${path.delimiter}${ld}`);
