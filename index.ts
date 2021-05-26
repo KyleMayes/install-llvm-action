@@ -270,12 +270,12 @@ async function install(options: Options): Promise<void> {
     throw new Error("Could not extract LLVM and Clang binaries.");
   }
 
-  console.log(`Installed LLVM and Clang ${options.version} (${specificVersion})!`);
+  core.info(`Installed LLVM and Clang ${options.version} (${specificVersion})! \nInstall-location: ${options.directory}`);
 }
 
 async function run(options: Options): Promise<void> {
   if (!options.directory) {
-    options.directory =  process.platform === "win32" ? "C:/Program Files/LLVM" : "~/llvm";
+    options.directory =  process.platform === "win32" ? "C:/Program Files/LLVM" : "./llvm";
   }
   options.directory = path.resolve(options.directory);
   if (options.cached) {
