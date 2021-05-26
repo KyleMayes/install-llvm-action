@@ -277,14 +277,15 @@ async function run(options: Options): Promise<void> {
   if (!options.directory) {
     options.directory =  process.platform === "win32" ? "C:/Program Files/LLVM" : "~/llvm";
   }
+  options.directory = path.resolve(options.directory);
   if (options.cached) {
     console.log(`Using cached LLVM and Clang ${options.version}...`);
   } else {
     await install(options);
   }
 
-  const bin = path.resolve(path.join(options.directory, "bin"));
-  const lib = path.resolve(path.join(options.directory, "lib"));
+  const bin = path.join(options.directory, "bin");
+  const lib = path.join(options.directory, "lib");
 
   core.addPath(bin);
 
