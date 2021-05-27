@@ -2,10 +2,9 @@ import * as core from "@actions/core";
 import * as exec from "@actions/exec";
 import * as io from "@actions/io";
 import * as tc from "@actions/tool-cache";
-import * as https from "https";
 import * as path from "path";
 
-interface Options {
+export interface Options {
   version: string,
   directory: string,
   forceVersion: boolean,
@@ -226,7 +225,7 @@ function getUrl(platform: string, version: string, options: Options): string | n
 }
 
 /** Gets the most recent specific LLVM version for which there is a valid download URL. */
-function getSpecificVersionAndUrl(platform: string, options: Options): [string, string] {
+export function getSpecificVersionAndUrl(platform: string, options: Options): [string, string] {
   if (options.forceVersion) {
     return [options.version, getUrl(platform, options.version, options)!];
   }
@@ -305,44 +304,15 @@ async function run(options: Options): Promise<void> {
   core.exportVariable("DYLD_LIBRARY_PATH", `${lib}${path.delimiter}${dyld}`);
 }
 
-async function test(platform: string, options: Options): Promise<void> {
-  const [specificVersion, url] = getSpecificVersionAndUrl(platform, options);
-  console.log(`Version: ${options.version} => ${specificVersion}`);
-  console.log(`Force version: ${options.forceVersion}`);
-  console.log(`Ubuntu version: ${options.ubuntuVersion || "<default>"}`);
-  console.log(`URL: ${url}`);
-  return new Promise((resolve, reject) => {
-    https.get(url, res => {
-      console.log(`Status: ${res.statusCode}`);
-      console.log(`Content-Length: ${res.headers["content-length"]}`)
-      if (res.statusCode && res.statusCode >= 200 && res.statusCode <= 399) {
-        resolve();
-      } else {
-        reject("Failed to download LLVM and Clang binaries.");
-      }
-    });
-  });
-}
-
 async function main() {
   try {
-    const start = process.argv.indexOf("test");
-    if (start === -1) {
-      const version = core.getInput("version");
-      const forceVersion = (core.getInput("force-version") || "").toLowerCase() === "true";
-      const ubuntuVersion = core.getInput("ubuntu-version");
-      const directory = core.getInput("directory");
-      const cached = (core.getInput("cached") || "").toLowerCase() === "true";
-      const options = { version, forceVersion, ubuntuVersion, directory, cached };
-      await run(options);
-    } else {
-      const platform = process.argv[start + 1];
-      const version = process.argv[start + 2];
-      const forceVersion = (process.argv[start + 3] || "").toLowerCase() === "true";
-      const ubuntuVersion = process.argv[start + 4];
-      const options = { version, forceVersion, ubuntuVersion, directory: "", cached: false };
-      await test(platform, options);
-    }
+    const version = core.getInput("version");
+    const forceVersion = (core.getInput("force-version") || "").toLowerCase() === "true";
+    const ubuntuVersion = core.getInput("ubuntu-version");
+    const directory = core.getInput("directory");
+    const cached = (core.getInput("cached") || "").toLowerCase() === "true";
+    const options = { version, forceVersion, ubuntuVersion, directory, cached };
+    await run(options);
   } catch (error) {
     console.error(error.stack);
     core.setFailed(error.message);
