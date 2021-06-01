@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "strict": true,
-    "moduleResolution": "node"
-   },
+    "moduleResolution": "node",
+    "strict": true
+  },
   "files": ["index.ts"]
 }

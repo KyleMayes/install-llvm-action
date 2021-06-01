@@ -5418,6 +5418,8 @@ function getSpecificVersionAndUrl(platform, options) {
 //================================================
 // Action
 //================================================
+var DEFAULT_NIX_DIRECTORY = "./llvm";
+var DEFAULT_WIN32_DIRECTORY = "C:/Program Files/LLVM";
 function install(options) {
     return __awaiter(this, void 0, void 0, function () {
         var platform, _a, specificVersion, url, archive, exit;
@@ -5448,7 +5450,8 @@ function install(options) {
                     if (exit !== 0) {
                         throw new Error("Could not extract LLVM and Clang binaries.");
                     }
-                    _actions_core__WEBPACK_IMPORTED_MODULE_0__.info("Installed LLVM and Clang " + options.version + " (" + specificVersion + ")! \nInstall-location: " + options.directory);
+                    _actions_core__WEBPACK_IMPORTED_MODULE_0__.info("Installed LLVM and Clang " + options.version + " (" + specificVersion + ")!");
+                    _actions_core__WEBPACK_IMPORTED_MODULE_0__.info("Install location: " + options.directory);
                     return [2 /*return*/];
             }
         });
@@ -5462,7 +5465,9 @@ function run(options) {
             switch (_c.label) {
                 case 0:
                     if (!options.directory) {
-                        options.directory = process.platform === "win32" ? "C:/Program Files/LLVM" : "./llvm";
+                        options.directory = process.platform === "win32"
+                            ? DEFAULT_WIN32_DIRECTORY
+                            : DEFAULT_NIX_DIRECTORY;
                     }
                     options.directory = path__WEBPACK_IMPORTED_MODULE_5__.resolve(options.directory);
                     if (!options.cached) return [3 /*break*/, 1];

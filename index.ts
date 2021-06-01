@@ -7,9 +7,9 @@ import * as path from "path";
 
 interface Options {
   version: string,
+  directory: string,
   forceVersion: boolean,
   ubuntuVersion?: string,
-  directory: string,
   cached: boolean,
 }
 
@@ -249,6 +249,9 @@ function getSpecificVersionAndUrl(platform: string, options: Options): [string, 
 // Action
 //================================================
 
+const DEFAULT_NIX_DIRECTORY = "./llvm";
+const DEFAULT_WIN32_DIRECTORY = "C:/Program Files/LLVM";
+
 async function install(options: Options): Promise<void> {
   const platform = process.platform;
   const [specificVersion, url] = getSpecificVersionAndUrl(platform, options);
@@ -270,14 +273,19 @@ async function install(options: Options): Promise<void> {
     throw new Error("Could not extract LLVM and Clang binaries.");
   }
 
-  core.info(`Installed LLVM and Clang ${options.version} (${specificVersion})! \nInstall-location: ${options.directory}`);
+  core.info(`Installed LLVM and Clang ${options.version} (${specificVersion})!`);
+  core.info(`Install location: ${options.directory}`);
 }
 
 async function run(options: Options): Promise<void> {
   if (!options.directory) {
-    options.directory =  process.platform === "win32" ? "C:/Program Files/LLVM" : "./llvm";
+    options.directory =  process.platform === "win32"
+      ? DEFAULT_WIN32_DIRECTORY
+      : DEFAULT_NIX_DIRECTORY;
   }
+
   options.directory = path.resolve(options.directory);
+
   if (options.cached) {
     console.log(`Using cached LLVM and Clang ${options.version}...`);
   } else {
