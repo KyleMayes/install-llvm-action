@@ -270,24 +270,29 @@ async function install(options: Options): Promise<void> {
     throw new Error("Could not extract LLVM and Clang binaries.");
   }
 
-  console.log(`Installed LLVM and Clang ${options.version} (${specificVersion})!`);
+  core.info(`Installed LLVM and Clang ${options.version} (${specificVersion})! \nInstall-location: ${options.directory}`);
 }
 
 async function run(options: Options): Promise<void> {
+  if (!options.directory) {
+    options.directory =  process.platform === "win32" ? "C:/Program Files/LLVM" : "./llvm";
+  }
+  options.directory = path.resolve(options.directory);
   if (options.cached) {
     console.log(`Using cached LLVM and Clang ${options.version}...`);
   } else {
     await install(options);
   }
 
-  const bin = path.resolve(path.join(options.directory, "bin"));
-  const lib = path.resolve(path.join(options.directory, "lib"));
+  const bin = path.join(options.directory, "bin");
+  const lib = path.join(options.directory, "lib");
 
   core.addPath(bin);
 
-  const ld = process.env.LD_LIBRARY_PATH;
-  const dyld = process.env.DYLD_LIBRARY_PATH;
+  const ld = process.env.LD_LIBRARY_PATH ?? "";
+  const dyld = process.env.DYLD_LIBRARY_PATH ?? "";
 
+  core.exportVariable("LLVM_PATH", options.directory);
   core.exportVariable("LD_LIBRARY_PATH", `${lib}${path.delimiter}${ld}`);
   core.exportVariable("DYLD_LIBRARY_PATH", `${lib}${path.delimiter}${dyld}`);
 }

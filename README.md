@@ -16,7 +16,9 @@ This can be a specific LLVM and Clang version such as `3.6.2` or a minimum versi
 
 ### `directory`
 
-**Required** The directory to install LLVM and Clang binaries to.
+The directory to install LLVM and Clang binaries to. If not provided it uses `"C:/Program Files/LLVM"` on Windows, and `"./llvm"` on other operating systems.
+
+The action sets `LLVM_PATH` environment variable, which allows you to refer to installation path in the subsequent jobs if needed (e.g. via `${{ env.LLVM_PATH }}`).
 
 ### `force-version`
 
@@ -51,6 +53,15 @@ This will only differ from the value of the `version` input when specifying a mi
   uses: KyleMayes/install-llvm-action@v1
   with:
     version: "10.0"
+```
+
+## Example with providing an installation directory:
+
+```yml
+- name: Install LLVM and Clang
+  uses: KyleMayes/install-llvm-action@v1
+  with:
+    version: "10.0"
     directory: ${{ runner.temp }}/llvm
 ```
 
@@ -63,12 +74,13 @@ This will only differ from the value of the `version` input when specifying a mi
   id: cache-llvm
   uses: actions/cache@v2
   with:
-    path: ${{ runner.temp }}/llvm
+    path: |
+      ./llvm
+      C:/Program Files/LLVM
     key: llvm-3.5
 - name: Install LLVM and Clang
   uses: KyleMayes/install-llvm-action@v1
   with:
     version: "3.5"
-    directory: ${{ runner.temp }}/llvm
     cached: ${{ steps.cache-llvm.outputs.cache-hit }}
 ```
