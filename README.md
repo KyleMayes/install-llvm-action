@@ -74,12 +74,13 @@ This will only differ from the value of the `version` input when specifying a mi
   id: cache-llvm
   uses: actions/cache@v2
   with:
-    path: ${{ runner.temp }}/llvm
+    path: |
+      ./llvm
+      C:/Program Files/LLVM
     key: llvm-3.5
 - name: Install LLVM and Clang
   uses: KyleMayes/install-llvm-action@v1
   with:
     version: "3.5"
-    directory: ${{ runner.temp }}/llvm
     cached: ${{ steps.cache-llvm.outputs.cache-hit }}
 ```
