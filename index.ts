@@ -319,4 +319,6 @@ async function main() {
   }
 }
 
-main();
+if (!module.parent) {
+  main();
+}

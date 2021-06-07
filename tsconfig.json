@@ -3,5 +3,5 @@
     "moduleResolution": "node",
     "strict": true
   },
-  "files": ["index.ts"]
+  "files": ["./index.ts", "./test.ts"]
 }
