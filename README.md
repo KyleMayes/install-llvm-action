@@ -85,17 +85,14 @@ This will only differ from the value of the `version` option when specifying a m
     cached: ${{ steps.cache-llvm.outputs.cache-hit }}
 ```
 
-**Note:** based on the benchmarks on Ubuntu, a cold setup of LLVM takes 60 seconds, but with cache,
-this becomes less than 20 seconds.
+**Note:** Based on some benchmarks on a GitHub Actions Ubuntu runner, an uncached install of the LLVM and Clang binaries using this action takes about 60 seconds but a cached install takes only about 20 seconds.
 
+## Linking to Installed Libraries (Linux)
 
-## Linking the installed libraries on Linux
-
-If your build system needs a library from the installed LLVM such as `libclang.so`, and it fails to find it,
-then link it using the following step:
+If your build system requires a library from the installed LLVM and Clang binaries such as `libclang.so`, and it fails to find it, then it may help to create a symlink for the versioned `.so` using the following step which utilizes the `LLVM_PATH` environment variable set by this action:
 
 ```yaml
-- name: Linux - link libclang.so
+- name: Symlink libclang.so (Linux)
   if: contains(matrix.os, 'ubuntu')
   run: sudo ln -s libclang-11.so.1 /lib/x86_64-linux-gnu/libclang.so
   working-directory: ${{ env.LLVM_PATH }}/lib
