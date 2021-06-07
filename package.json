@@ -10,16 +10,16 @@
     "test": "ts-node test.ts test"
   },
   "dependencies": {
-    "@actions/core": "~1.2.7",
-    "@actions/exec": "~1.0.4",
-    "@actions/io": "~1.1.0",
-    "@actions/tool-cache": "~1.6.1"
+    "@actions/core": "~1.4.0",
+    "@actions/exec": "~1.1.0",
+    "@actions/io": "~1.1.1",
+    "@actions/tool-cache": "~1.7.1"
   },
   "devDependencies": {
     "@types/node": "~12.12.2",
     "parcel": "^2.0.0-beta.3.1",
     "ts-node": "^10.0.0",
-    "typescript": "^4.2.4"
+    "typescript": "^4.3.2"
   },
   "targets": {
     "main": {
