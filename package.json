@@ -6,8 +6,8 @@
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "scripts": {
-    "build": "ncc build index.ts",
-    "test": "ts-node index.ts test"
+    "build": "parcel build index.ts",
+    "test": "ts-node ./test/test.ts test"
   },
   "dependencies": {
     "@actions/core": "~1.2.7",
@@ -17,7 +17,16 @@
   },
   "devDependencies": {
     "@types/node": "~12.12.2",
-    "@vercel/ncc": "^0.28.5",
+    "parcel": "^2.0.0-beta.3.1",
     "typescript": "^4.2.4"
+  },
+  "targets": {
+    "main": {
+      "context": "node",
+      "engines": {
+        "node" : "12"
+      },
+      "includeNodeModules": true
+    }
   }
 }
