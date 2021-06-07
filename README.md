@@ -69,8 +69,6 @@ This will only differ from the value of the `version` option when specifying a m
 
 ## Example Usage (with caching)
 
-**Note:** Since version 9.0.1, LLVM and Clang binaries are [hosted on GitHub](https://github.com/llvm/llvm-project/releases). If you are targeting this or a later version, caching the binaries will almost certainly be slower than just downloading them directly each time since in either case they are coming from GitHub's servers and by not caching them your pipeline will have fewer steps.
-
 ```yml
 - name: Cache LLVM and Clang
   id: cache-llvm
@@ -85,4 +83,20 @@ This will only differ from the value of the `version` option when specifying a m
   with:
     version: "3.5"
     cached: ${{ steps.cache-llvm.outputs.cache-hit }}
+```
+
+**Note:** based on the benchmarks on Ubuntu, a cold setup of LLVM takes 60 seconds, but with cache,
+this becomes less than 20 seconds.
+
+
+## Linking the installed libraries on Linux
+
+If your build system needs a library from the installed LLVM such as `libclang.so`, and it fails to find it,
+then link it using the following step:
+
+```yaml
+- name: Linux - link libclang.so
+  if: contains(matrix.os, 'ubuntu')
+  run: sudo ln -s libclang-11.so.1 /lib/x86_64-linux-gnu/libclang.so
+  working-directory: ${{ env.LLVM_PATH }}/lib
 ```
