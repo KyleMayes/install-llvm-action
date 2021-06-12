@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Check Build
+        if: runner.os == 'Linux'
+        run: |
+          cp dist/index.js dist/index.original.js
+          yarn
+          yarn build
+          if ! cmp --silent dist/index.js dist/index.original.js; then
+            echo "dist/index.js is out of date, you need to run 'yarn build'."
+            cksum dist/index.js
+            cksum dist/index.original.js
+            exit 1
+          else
+            echo "dist/index.js is up to date"
+          fi
+      - name: Install LLVM and Clang (basic)
+        uses: ./
+        with:
+          version: "12"
