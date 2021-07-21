@@ -47,7 +47,7 @@ const VERSIONS: Set<string> = getVersions([
   "9.0.0", "9.0.1",
   "10.0.0", "10.0.1",
   "11.0.0", "11.0.1", "11.1.0",
-  "12.0.0",
+  "12.0.0", "12.0.1",
 ]);
 
 /** Gets the ordering of two (specific or minimum) LLVM versions. */
@@ -111,6 +111,7 @@ const DARWIN_MISSING: Set<string> = new Set([
   "8.0.1",
   "11.0.1",
   "11.1.0",
+  "12.0.1",
 ]);
 
 /** Gets an LLVM download URL for the Darwin platform. */
@@ -128,6 +129,16 @@ function getDarwinUrl(version: string, options: Options): string | null {
     return getReleaseUrl(version, prefix, suffix);
   }
 }
+
+/**
+ * The LLVM versions that should use the last RC version instead of the release
+ * version for the Linux (Ubuntu) platform. This is useful when there were
+ * binaries released for the Linux (Ubuntu) platform for the last RC version but
+ * not for the actual release version.
+ */
+const UBUNTU_RC: Map<string, string> = new Map([
+  ["12.0.1", "12.0.1-rc4"],
+]);
 
 /** The (latest) Ubuntu versions for each LLVM version. */
 const UBUNTU: { [key: string]: string } = {
@@ -161,13 +172,19 @@ const UBUNTU: { [key: string]: string } = {
   "11.0.1": "-ubuntu-16.04",
   "11.1.0": "-ubuntu-16.04",
   "12.0.0": "-ubuntu-20.04",
+  "12.0.1-rc4": "-ubuntu-21.04",
 };
 
 /** The latest supported LLVM version for the Linux (Ubuntu) platform. */
-const MAX_UBUNTU: string = "12.0.0";
+const MAX_UBUNTU: string = "12.0.1-rc4";
 
 /** Gets an LLVM download URL for the Linux (Ubuntu) platform. */
 function getLinuxUrl(version: string, options: Options): string | null {
+  const rc = UBUNTU_RC.get(version);
+  if (rc) {
+    version = rc;
+  }
+
   let ubuntu;
   if (options.ubuntuVersion) {
     ubuntu = `-ubuntu-${options.ubuntuVersion}`;
