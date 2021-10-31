@@ -330,7 +330,7 @@ async function main() {
     const cached = (core.getInput("cached") || "").toLowerCase() === "true";
     const options = { version, forceVersion, ubuntuVersion, directory, cached };
     await run(options);
-  } catch (error) {
+  } catch (error: any) {
     console.error(error.stack);
     core.setFailed(error.message);
   }

@@ -48,7 +48,7 @@ Expected at least two arguments:
     };
 
     await test(platform, options);
-  } catch (error) {
+  } catch (error: any) {
     console.error(error.stack);
     process.exit(1);
   }
