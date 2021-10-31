@@ -178,12 +178,7 @@ var $ficLE = parcelRequire("ficLE");
  * version for the Linux (Ubuntu) platform. This is useful when there were
  * binaries released for the Linux (Ubuntu) platform for the last RC version but
  * not for the actual release version.
- */ const UBUNTU_RC = new Map([
-    [
-        "12.0.1",
-        "12.0.1-rc4"
-    ], 
-]);
+ */ const UBUNTU_RC = new Map([]);
 /** The (latest) Ubuntu versions for each LLVM version. */ const UBUNTU = {
     "3.5.0": "-ubuntu-14.04",
     "3.5.1": "",
@@ -215,9 +210,9 @@ var $ficLE = parcelRequire("ficLE");
     "11.0.1": "-ubuntu-16.04",
     "11.1.0": "-ubuntu-16.04",
     "12.0.0": "-ubuntu-20.04",
-    "12.0.1-rc4": "-ubuntu-21.04"
+    "12.0.1": "-ubuntu-16.04"
 };
-/** The latest supported LLVM version for the Linux (Ubuntu) platform. */ const MAX_UBUNTU = "12.0.1-rc4";
+/** The latest supported LLVM version for the Linux (Ubuntu) platform. */ const MAX_UBUNTU = "12.0.1";
 /** Gets an LLVM download URL for the Linux (Ubuntu) platform. */ function getLinuxUrl(version, options) {
     const rc = UBUNTU_RC.get(version);
     if (rc) version = rc;
