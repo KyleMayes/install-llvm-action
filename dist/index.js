@@ -116,7 +116,8 @@ var $ficLE = parcelRequire("ficLE");
     "11.1.0",
     "12.0.0",
     "12.0.1",
-    "13.0.0", 
+    "13.0.0",
+    "13.0.1", 
 ]);
 /** Gets the ordering of two (specific or minimum) LLVM versions. */ function compareVersions(left, right) {
     const leftComponents = left.split(".").map((c)=>parseInt(c, 10)
@@ -212,7 +213,8 @@ var $ficLE = parcelRequire("ficLE");
     "11.1.0": "-ubuntu-16.04",
     "12.0.0": "-ubuntu-20.04",
     "12.0.1": "-ubuntu-16.04",
-    "13.0.0": "-ubuntu-20.04"
+    "13.0.0": "-ubuntu-20.04",
+    "13.0.1": "-ubuntu-18.04"
 };
 /** The latest supported LLVM version for the Linux (Ubuntu) platform. */ const MAX_UBUNTU = "13.0.0";
 /** Gets an LLVM download URL for the Linux (Ubuntu) platform. */ function getLinuxUrl(version, options) {

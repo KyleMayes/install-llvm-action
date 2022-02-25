@@ -48,7 +48,7 @@ const VERSIONS: Set<string> = getVersions([
   "10.0.0", "10.0.1",
   "11.0.0", "11.0.1", "11.1.0",
   "12.0.0", "12.0.1",
-  "13.0.0",
+  "13.0.0", "13.0.1",
 ]);
 
 /** Gets the ordering of two (specific or minimum) LLVM versions. */
@@ -173,6 +173,7 @@ const UBUNTU: { [key: string]: string } = {
   "12.0.0": "-ubuntu-20.04",
   "12.0.1": "-ubuntu-16.04",
   "13.0.0": "-ubuntu-20.04",
+  "13.0.1": "-ubuntu-18.04",
 };
 
 /** The latest supported LLVM version for the Linux (Ubuntu) platform. */
