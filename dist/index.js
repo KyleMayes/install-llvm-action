@@ -1522,9 +1522,9 @@ function $2b1b13c80e34d478$var$httpsOverHttps(options) {
     agent.defaultPort = 443;
     return agent;
 }
-function $2b1b13c80e34d478$var$TunnelingAgent(options) {
+function $2b1b13c80e34d478$var$TunnelingAgent(options1) {
     var self = this;
-    self.options = options || {
+    self.options = options1 || {
     };
     self.proxyOptions = self.options.proxy || {
     };
@@ -1647,8 +1647,8 @@ $2b1b13c80e34d478$var$TunnelingAgent.prototype.createSocket = function createSoc
         self.removeSocket(placeholder);
     }
 };
-$2b1b13c80e34d478$var$TunnelingAgent.prototype.removeSocket = function removeSocket(socket) {
-    var pos = this.sockets.indexOf(socket);
+$2b1b13c80e34d478$var$TunnelingAgent.prototype.removeSocket = function removeSocket(socket1) {
+    var pos = this.sockets.indexOf(socket1);
     if (pos === -1) return;
     this.sockets.splice(pos, 1);
     var pending = this.requests.shift();
@@ -4846,31 +4846,31 @@ SemVer.prototype.comparePre = function(other) {
     if (this.prerelease.length && !other.prerelease.length) return -1;
     else if (!this.prerelease.length && other.prerelease.length) return 1;
     else if (!this.prerelease.length && !other.prerelease.length) return 0;
-    var i = 0;
+    var i1 = 0;
     do {
-        var a = this.prerelease[i];
-        var b = other.prerelease[i];
-        debug('prerelease compare', i, a, b);
+        var a = this.prerelease[i1];
+        var b = other.prerelease[i1];
+        debug('prerelease compare', i1, a, b);
         if (a === undefined && b === undefined) return 0;
         else if (b === undefined) return 1;
         else if (a === undefined) return -1;
         else if (a === b) continue;
         else return compareIdentifiers(a, b);
-    }while (++i)
+    }while (++i1)
 };
 SemVer.prototype.compareBuild = function(other) {
     if (!(other instanceof SemVer)) other = new SemVer(other, this.options);
-    var i = 0;
+    var i2 = 0;
     do {
-        var a = this.build[i];
-        var b = other.build[i];
-        debug('prerelease compare', i, a, b);
+        var a = this.build[i2];
+        var b = other.build[i2];
+        debug('prerelease compare', i2, a, b);
         if (a === undefined && b === undefined) return 0;
         else if (b === undefined) return 1;
         else if (a === undefined) return -1;
         else if (a === b) continue;
         else return compareIdentifiers(a, b);
-    }while (++i)
+    }while (++i2)
 };
 // preminor will bump the version up to the next minor release, and immediately
 // down to pre-release. premajor and prepatch work the same way.
@@ -4937,12 +4937,12 @@ SemVer.prototype.inc = function(release, identifier) {
                 0
             ];
             else {
-                var i = this.prerelease.length;
-                while(--i >= 0)if (typeof this.prerelease[i] === 'number') {
-                    this.prerelease[i]++;
-                    i = -2;
+                var i3 = this.prerelease.length;
+                while(--i3 >= 0)if (typeof this.prerelease[i3] === 'number') {
+                    this.prerelease[i3]++;
+                    i3 = -2;
                 }
-                if (i === -1) // didn't increment anything
+                if (i3 === -1) // didn't increment anything
                 this.prerelease.push(0);
             }
             if (identifier) {
@@ -5175,29 +5175,29 @@ Comparator.prototype.intersects = function(comp, options) {
     return sameDirectionIncreasing || sameDirectionDecreasing || sameSemVer && differentDirectionsInclusive || oppositeDirectionsLessThan || oppositeDirectionsGreaterThan;
 };
 exports.Range = Range;
-function Range(range, options) {
+function Range(range1, options) {
     if (!options || typeof options !== 'object') options = {
         loose: !!options,
         includePrerelease: false
     };
-    if (range instanceof Range) {
-        if (range.loose === !!options.loose && range.includePrerelease === !!options.includePrerelease) return range;
-        else return new Range(range.raw, options);
+    if (range1 instanceof Range) {
+        if (range1.loose === !!options.loose && range1.includePrerelease === !!options.includePrerelease) return range1;
+        else return new Range(range1.raw, options);
     }
-    if (range instanceof Comparator) return new Range(range.value, options);
-    if (!(this instanceof Range)) return new Range(range, options);
+    if (range1 instanceof Comparator) return new Range(range1.value, options);
+    if (!(this instanceof Range)) return new Range(range1, options);
     this.options = options;
     this.loose = !!options.loose;
     this.includePrerelease = !!options.includePrerelease;
     // First, split based on boolean or ||
-    this.raw = range;
-    this.set = range.split(/\s*\|\|\s*/).map(function(range) {
+    this.raw = range1;
+    this.set = range1.split(/\s*\|\|\s*/).map(function(range) {
         return this.parseRange(range.trim());
     }, this).filter(function(c) {
         // throw out any that are not relevant for whatever reason
         return c.length;
     });
-    if (!this.set.length) throw new TypeError('Invalid SemVer Range: ' + range);
+    if (!this.set.length) throw new TypeError('Invalid SemVer Range: ' + range1);
     this.format();
 }
 Range.prototype.format = function() {
@@ -5299,8 +5299,8 @@ function isX(id) {
 // ~1.2, ~1.2.x, ~>1.2, ~>1.2.x --> >=1.2.0 <1.3.0
 // ~1.2.3, ~>1.2.3 --> >=1.2.3 <1.3.0
 // ~1.2.0, ~>1.2.0 --> >=1.2.0 <1.3.0
-function replaceTildes(comp, options) {
-    return comp.trim().split(/\s+/).map(function(comp) {
+function replaceTildes(comp1, options) {
+    return comp1.trim().split(/\s+/).map(function(comp) {
         return replaceTilde(comp, options);
     }).join(' ');
 }
@@ -5328,8 +5328,8 @@ function replaceTilde(comp, options) {
 // ^1.2, ^1.2.x --> >=1.2.0 <2.0.0
 // ^1.2.3 --> >=1.2.3 <2.0.0
 // ^1.2.0 --> >=1.2.0 <2.0.0
-function replaceCarets(comp, options) {
-    return comp.trim().split(/\s+/).map(function(comp) {
+function replaceCarets(comp2, options) {
+    return comp2.trim().split(/\s+/).map(function(comp) {
         return replaceCaret(comp, options);
     }).join(' ');
 }
@@ -5361,9 +5361,9 @@ function replaceCaret(comp, options) {
         return ret;
     });
 }
-function replaceXRanges(comp, options) {
-    debug('replaceXRanges', comp, options);
-    return comp.split(/\s+/).map(function(comp) {
+function replaceXRanges(comp3, options) {
+    debug('replaceXRanges', comp3, options);
+    return comp3.split(/\s+/).map(function(comp) {
         return replaceXRange(comp, options);
     }).join(' ');
 }
@@ -5449,14 +5449,14 @@ Range.prototype.test = function(version) {
     } catch (er) {
         return false;
     }
-    for(var i = 0; i < this.set.length; i++){
-        if (testSet(this.set[i], version, this.options)) return true;
+    for(var i4 = 0; i4 < this.set.length; i4++){
+        if (testSet(this.set[i4], version, this.options)) return true;
     }
     return false;
 };
 function testSet(set, version, options) {
-    for(var i = 0; i < set.length; i++){
-        if (!set[i].test(version)) return false;
+    for(var i5 = 0; i5 < set.length; i5++){
+        if (!set[i5].test(version)) return false;
     }
     if (version.prerelease.length && !options.includePrerelease) {
         // Find the set of versions that are allowed to have prereleases
@@ -5464,11 +5464,11 @@ function testSet(set, version, options) {
         // That should allow `1.2.3-pr.2` to pass.
         // However, `1.2.4-alpha.notready` should NOT be allowed,
         // even though it's within the range set by the comparators.
-        for(i = 0; i < set.length; i++){
-            debug(set[i].semver);
-            if (set[i].semver === ANY) continue;
-            if (set[i].semver.prerelease.length > 0) {
-                var allowed = set[i].semver;
+        for(i5 = 0; i5 < set.length; i5++){
+            debug(set[i5].semver);
+            if (set[i5].semver === ANY) continue;
+            if (set[i5].semver.prerelease.length > 0) {
+                var allowed = set[i5].semver;
                 if (allowed.major === version.major && allowed.minor === version.minor && allowed.patch === version.patch) return true;
             }
         }
@@ -5536,8 +5536,8 @@ function minVersion(range, loose) {
     minver = new SemVer('0.0.0-0');
     if (range.test(minver)) return minver;
     minver = null;
-    for(var i = 0; i < range.set.length; ++i){
-        var comparators = range.set[i];
+    for(var i6 = 0; i6 < range.set.length; ++i6){
+        var comparators = range.set[i6];
         comparators.forEach(function(comparator) {
             // Clone to avoid manipulating the comparator's semver object.
             var compver = new SemVer(comparator.semver.version);
@@ -5608,8 +5608,8 @@ function outside(version, range, hilo, options) {
     if (satisfies(version, range, options)) return false;
     // From now on, variable terms are as if we're in "gtr" mode.
     // but note that everything is flipped for the "ltr" function.
-    for(var i = 0; i < range.set.length; ++i){
-        var comparators = range.set[i];
+    for(var i7 = 0; i7 < range.set.length; ++i7){
+        var comparators = range.set[i7];
         var high = null;
         var low = null;
         comparators.forEach(function(comparator) {
