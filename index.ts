@@ -282,7 +282,7 @@ async function install(options: Options): Promise<void> {
 
   let exit;
   if (platform === "win32") {
-    exit = await exec.exec("7z", ["x", archive, `-o${options.directory}`]);
+    exit = await exec.exec("7z", ["x", archive, `-o${options.directory}`, "-y"]);
   } else {
     await io.mkdirP(options.directory);
     exit = await exec.exec("tar", ["xf", archive, "-C", options.directory, "--strip-components=1"]);
