@@ -118,7 +118,13 @@ var $ficLE = parcelRequire("ficLE");
     "12.0.1",
     "13.0.0",
     "13.0.1",
-    "14.0.0"
+    "14.0.0",
+    "14.0.1",
+    "14.0.2",
+    "14.0.3",
+    "14.0.4",
+    "14.0.5",
+    "14.0.6", 
 ]);
 /** Gets the ordering of two (specific or minimum) LLVM versions. */ function compareVersions(left, right) {
     const leftComponents = left.split(".").map((c)=>parseInt(c, 10)
@@ -176,6 +182,14 @@ var $ficLE = parcelRequire("ficLE");
     if (compareVersions(version, "9.0.1") >= 0) return getGitHubUrl(version, prefix, suffix);
     else return getReleaseUrl(version, prefix, suffix);
 }
+/** The LLVM versions that were never released for the Linux platform. */ const LINUX_MISSING = new Set([
+    "14.0.1",
+    "14.0.2",
+    "14.0.3",
+    "14.0.4",
+    "14.0.5",
+    "14.0.6", 
+]);
 /**
  * The LLVM versions that should use the last RC version instead of the release
  * version for the Linux (Ubuntu) platform. This is useful when there were
@@ -218,8 +232,9 @@ var $ficLE = parcelRequire("ficLE");
     "13.0.1": "-ubuntu-18.04",
     "14.0.0": "-ubuntu-18.04"
 };
-/** The latest supported LLVM version for the Linux (Ubuntu) platform. */ const MAX_UBUNTU = "14.0.0";
+/** The latest supported LLVM version for the Linux (Ubuntu) platform. */ const MAX_UBUNTU = "14.0.6";
 /** Gets an LLVM download URL for the Linux (Ubuntu) platform. */ function getLinuxUrl(version, options) {
+    if (!options.forceVersion && LINUX_MISSING.has(version)) return null;
     const rc = UBUNTU_RC.get(version);
     if (rc) version = rc;
     let ubuntu;

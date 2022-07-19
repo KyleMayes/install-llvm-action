@@ -49,7 +49,7 @@ const VERSIONS: Set<string> = getVersions([
   "11.0.0", "11.0.1", "11.1.0",
   "12.0.0", "12.0.1",
   "13.0.0", "13.0.1",
-  "14.0.0"
+  "14.0.0", "14.0.1", "14.0.2", "14.0.3", "14.0.4", "14.0.5", "14.0.6",
 ]);
 
 /** Gets the ordering of two (specific or minimum) LLVM versions. */
@@ -132,6 +132,16 @@ function getDarwinUrl(version: string, options: Options): string | null {
   }
 }
 
+/** The LLVM versions that were never released for the Linux platform. */
+const LINUX_MISSING: Set<string> = new Set([
+  "14.0.1",
+  "14.0.2",
+  "14.0.3",
+  "14.0.4",
+  "14.0.5",
+  "14.0.6",
+]);
+
 /**
  * The LLVM versions that should use the last RC version instead of the release
  * version for the Linux (Ubuntu) platform. This is useful when there were
@@ -179,10 +189,14 @@ const UBUNTU: { [key: string]: string } = {
 };
 
 /** The latest supported LLVM version for the Linux (Ubuntu) platform. */
-const MAX_UBUNTU: string = "14.0.0";
+const MAX_UBUNTU: string = "14.0.6";
 
 /** Gets an LLVM download URL for the Linux (Ubuntu) platform. */
 function getLinuxUrl(version: string, options: Options): string | null {
+  if (!options.forceVersion && LINUX_MISSING.has(version)) {
+    return null;
+  }
+
   const rc = UBUNTU_RC.get(version);
   if (rc) {
     version = rc;
