@@ -10,6 +10,8 @@ export interface Options {
   forceVersion: boolean,
   ubuntuVersion?: string,
   cached: boolean,
+  downloadUrl?: string,
+  auth?: string,
 }
 
 //================================================
@@ -87,10 +89,15 @@ function getSpecificVersions(version: string): string[] {
 // URL
 //================================================
 
+/** Gets a LLVM download URL for GitHub release mirror like artifactory. */
+function getDownloadUrl(baseUrl: string, version: string, prefix: string, suffix: string): string {
+  const file = `${prefix}${version}${suffix}`;
+  return `${baseUrl}/${file}`;
+}
+
 /** Gets a LLVM download URL for GitHub. */
 function getGitHubUrl(version: string, prefix: string, suffix: string): string {
-  const file = `${prefix}${version}${suffix}`;
-  return `https://github.com/llvm/llvm-project/releases/download/llvmorg-${version}/${file}`;
+  return getDownloadUrl(`https://github.com/llvm/llvm-project/releases/download/llvmorg-${version}`, version, prefix, suffix);
 }
 
 /** Gets a LLVM download URL for https://releases.llvm.org. */
@@ -125,7 +132,9 @@ function getDarwinUrl(version: string, options: Options): string | null {
   const darwin = version === "9.0.0" ? "-darwin-apple" : "-apple-darwin";
   const prefix = "clang+llvm-";
   const suffix = `-x86_64${darwin}.tar.xz`;
-  if (compareVersions(version, "9.0.1") >= 0) {
+  if (options.downloadUrl) {
+    return getDownloadUrl(options.downloadUrl, version, prefix, suffix);
+  } else if (compareVersions(version, "9.0.1") >= 0) {
     return getGitHubUrl(version, prefix, suffix);
   } else {
     return getReleaseUrl(version, prefix, suffix);
@@ -292,7 +301,7 @@ async function install(options: Options): Promise<void> {
 
   console.log(`Installing LLVM and Clang ${options.version} (${specificVersion})...`);
   console.log(`Downloading and extracting '${url}'...`);
-  const archive = await tc.downloadTool(url);
+  const archive = await tc.downloadTool(url, '', options.auth);
 
   let exit;
   if (platform === "win32") {
