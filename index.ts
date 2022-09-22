@@ -64,6 +64,7 @@ const VERSIONS: Set<string> = getVersions([
   "12.0.0", "12.0.1",
   "13.0.0", "13.0.1",
   "14.0.0", "14.0.1", "14.0.2", "14.0.3", "14.0.4", "14.0.5", "14.0.6",
+  "15.0.0", "15.0.1",
 ]);
 
 /** Gets the ordering of two (specific or minimum) LLVM versions. */
@@ -161,6 +162,8 @@ const LINUX_MISSING: Set<string> = new Set([
   "14.0.4",
   "14.0.5",
   "14.0.6",
+  "15.0.0",
+  "15.0.1",
 ]);
 
 /**

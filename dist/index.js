@@ -138,7 +138,9 @@ function getOptions() {
     "14.0.3",
     "14.0.4",
     "14.0.5",
-    "14.0.6", 
+    "14.0.6",
+    "15.0.0",
+    "15.0.1", 
 ]);
 /** Gets the ordering of two (specific or minimum) LLVM versions. */ function compareVersions(left, right) {
     const leftComponents = left.split(".").map((c)=>parseInt(c, 10));
@@ -203,7 +205,9 @@ function getOptions() {
     "14.0.3",
     "14.0.4",
     "14.0.5",
-    "14.0.6", 
+    "14.0.6",
+    "15.0.0",
+    "15.0.1", 
 ]);
 /**
  * The LLVM versions that should use the last RC version instead of the release
