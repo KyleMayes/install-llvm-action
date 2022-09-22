@@ -40,6 +40,18 @@ For a given LLVM and Clang version, there are sometimes multiple binaries availa
 
 Whether the LLVM and Clang binaries were cached.
 
+### `download-url`
+
+The URL to download LLVM and Clang binaries from.
+
+This can be used if you want to download the LLVM and Clang binaries from a mirror of the GitHub releases for the `llvm/llvm-project` repository provided by a service like Artifactory.
+
+### `auth`
+
+The `Authorization` header to use when downloading LLVM and Clang binaries.
+
+This is unnecessary unless you are providing a custom download URL using the `download-url` input and you need to provide an `Authorization` header when downloading the LLVM and Clang binaries from the service targeted by that custom download URL.
+
 ## Outputs
 
 ### `version`
