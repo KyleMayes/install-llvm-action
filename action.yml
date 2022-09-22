@@ -21,6 +21,12 @@ inputs:
   cached:
     description: "Whether the LLVM and Clang binaries were cached."
     required: false
+  download-url:
+    description: "The URL to download LLVM and Clang binaries from."
+    required: false
+  auth:
+    description: "The auth header value to use when downloading LLVM and Clang binaries."
+    required: false
 
 outputs:
   version:
