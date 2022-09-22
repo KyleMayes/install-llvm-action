@@ -14,6 +14,18 @@ export interface Options {
   auth?: string,
 }
 
+function getOptions(): Options {
+  return {
+    version: core.getInput("version"),
+    forceVersion: (core.getInput("force-version") || "").toLowerCase() === "true",
+    ubuntuVersion: core.getInput("ubuntu-version"),
+    directory: core.getInput("directory"),
+    cached: (core.getInput("cached") || "").toLowerCase() === "true",
+    downloadUrl: core.getInput("download-url"),
+    auth: core.getInput("auth"),
+  };
+}
+
 //================================================
 // Version
 //================================================
@@ -349,13 +361,7 @@ async function run(options: Options): Promise<void> {
 
 async function main() {
   try {
-    const version = core.getInput("version");
-    const forceVersion = (core.getInput("force-version") || "").toLowerCase() === "true";
-    const ubuntuVersion = core.getInput("ubuntu-version");
-    const directory = core.getInput("directory");
-    const cached = (core.getInput("cached") || "").toLowerCase() === "true";
-    const options = { version, forceVersion, ubuntuVersion, directory, cached };
-    await run(options);
+    await run(getOptions());
   } catch (error: any) {
     console.error(error.stack);
     core.setFailed(error.message);

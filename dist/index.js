@@ -68,6 +68,17 @@ var $gQX9t = parcelRequire("gQX9t");
 
 var $ficLE = parcelRequire("ficLE");
 
+function getOptions() {
+    return {
+        version: $3KZaW.getInput("version"),
+        forceVersion: ($3KZaW.getInput("force-version") || "").toLowerCase() === "true",
+        ubuntuVersion: $3KZaW.getInput("ubuntu-version"),
+        directory: $3KZaW.getInput("directory"),
+        cached: ($3KZaW.getInput("cached") || "").toLowerCase() === "true",
+        downloadUrl: $3KZaW.getInput("download-url"),
+        auth: $3KZaW.getInput("auth")
+    };
+}
 //================================================
 // Version
 //================================================
@@ -151,9 +162,12 @@ var $ficLE = parcelRequire("ficLE");
 //================================================
 // URL
 //================================================
-/** Gets a LLVM download URL for GitHub. */ function getGitHubUrl(version, prefix, suffix) {
+/** Gets a LLVM download URL for GitHub release mirror like artifactory. */ function getDownloadUrl(baseUrl, version, prefix, suffix) {
     const file = `${prefix}${version}${suffix}`;
-    return `https://github.com/llvm/llvm-project/releases/download/llvmorg-${version}/${file}`;
+    return `${baseUrl}/${file}`;
+}
+/** Gets a LLVM download URL for GitHub. */ function getGitHubUrl(version, prefix, suffix) {
+    return getDownloadUrl(`https://github.com/llvm/llvm-project/releases/download/llvmorg-${version}`, version, prefix, suffix);
 }
 /** Gets a LLVM download URL for https://releases.llvm.org. */ function getReleaseUrl(version, prefix, suffix) {
     const file = `${prefix}${version}${suffix}`;
@@ -179,7 +193,8 @@ var $ficLE = parcelRequire("ficLE");
     const darwin = version === "9.0.0" ? "-darwin-apple" : "-apple-darwin";
     const prefix = "clang+llvm-";
     const suffix = `-x86_64${darwin}.tar.xz`;
-    if (compareVersions(version, "9.0.1") >= 0) return getGitHubUrl(version, prefix, suffix);
+    if (options.downloadUrl) return getDownloadUrl(options.downloadUrl, version, prefix, suffix);
+    else if (compareVersions(version, "9.0.1") >= 0) return getGitHubUrl(version, prefix, suffix);
     else return getReleaseUrl(version, prefix, suffix);
 }
 /** The LLVM versions that were never released for the Linux platform. */ const LINUX_MISSING = new Set([
@@ -295,7 +310,7 @@ async function install(options) {
     $3KZaW.setOutput("version", specificVersion);
     console.log(`Installing LLVM and Clang ${options.version} (${specificVersion})...`);
     console.log(`Downloading and extracting '${url}'...`);
-    const archive = await $ficLE.downloadTool(url);
+    const archive = await $ficLE.downloadTool(url, '', options.auth);
     let exit;
     if (platform === "win32") exit = await $d6Tes.exec("7z", [
         "x",
@@ -335,19 +350,7 @@ async function run(options) {
 }
 async function main() {
     try {
-        const version = $3KZaW.getInput("version");
-        const forceVersion = ($3KZaW.getInput("force-version") || "").toLowerCase() === "true";
-        const ubuntuVersion = $3KZaW.getInput("ubuntu-version");
-        const directory = $3KZaW.getInput("directory");
-        const cached = ($3KZaW.getInput("cached") || "").toLowerCase() === "true";
-        const options = {
-            version,
-            forceVersion,
-            ubuntuVersion,
-            directory,
-            cached
-        };
-        await run(options);
+        await run(getOptions());
     } catch (error) {
         console.error(error.stack);
         $3KZaW.setFailed(error.message);
