@@ -29,23 +29,40 @@ async function main() {
   if (process.argv.length < start + 3) {
     console.error(`\
 Expected at least two arguments:
-  1. platform
-  2. version
-  3. forceVersion (optional)
-  4. ubuntuVersion (optional)`)
+  1. <platform>
+  2. <version>
+  3. --forceVersion=<forceVersion> (optional)
+  4. --ubuntuVersion=<ubuntuVersion> (optional)`)
     process.exit(1);
   }
 
   try {
     const platform = process.argv[start + 1];
 
-    const options = {
+    const options: Options = {
       version: process.argv[start + 2],
-      forceVersion: (process.argv[start + 3] || "").toLowerCase() === "true",
-      ubuntuVersion: process.argv[start + 4],
       directory: "",
+      forceVersion: false,
       cached: false,
     };
+
+    for (const argument of process.argv.slice(start + 3)) {
+      const [name, value] = argument.split("=");
+      switch (name) {
+        case "--forceVersion":
+          options.forceVersion = value.toLowerCase() === "true";
+          break;
+        case "--ubuntuVersion":
+          options.ubuntuVersion = value;
+          break;
+        default:
+          console.error(`Invalid argument: ${argument}`);
+          process.exit(1);
+          break;
+      }
+    }
+
+    console.log(`Options: ${JSON.stringify(options, null, "  ")}`);
 
     await test(platform, options);
   } catch (error: any) {
