@@ -373,8 +373,8 @@ async function run(options: Options): Promise<void> {
   core.exportVariable("DYLD_LIBRARY_PATH", `${lib}${path.delimiter}${dyld}`);
 
   if (options.env) {
-    core.exportVariable("CC", `${options.directory}/bin/clang`);
-    core.exportVariable("CXX", `${options.directory}/bin/clang++`);
+    core.exportVariable("CC", path.join(options.directory, "bin", "clang"));
+    core.exportVariable("CXX", path.join(options.directory, "bin", "clang++"));
   }
 }
 
