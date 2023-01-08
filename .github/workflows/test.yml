@@ -13,6 +13,7 @@ jobs:
         os:
           - ubuntu-latest
           - macos-latest
+          - windows-latest
         version:
           - 14
           - 15
@@ -30,7 +31,7 @@ jobs:
 
       - name: Test
         run: |
-          which $CC
-          which $CXX
+          echo $CC
+          echo $CXX
           $CC --version
           $CXX --version
