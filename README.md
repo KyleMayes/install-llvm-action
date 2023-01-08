@@ -52,6 +52,10 @@ The `Authorization` header to use when downloading LLVM and Clang binaries.
 
 This is unnecessary unless you are providing a custom download URL using the `download-url` input and you need to provide an `Authorization` header when downloading the LLVM and Clang binaries from the service targeted by that custom download URL.
 
+### `env`
+
+Whether to set `CC/CXX` environment variables.
+
 ## Outputs
 
 ### `version`
