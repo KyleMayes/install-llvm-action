@@ -1,5 +1,7 @@
 # install-llvm-action
 
+[![Test](https://github.com/KyleMayes/install-llvm-action/actions/workflows/test.yml/badge.svg)](https://github.com/KyleMayes/install-llvm-action/actions/workflows/test.yml)
+
 A GitHub Action for downloading and installing LLVM and Clang binaries.
 
 The binaries will be added to the relevant environment variables for the platform after installation (e.g., `PATH`, `LD_LIBRARY_PATH`, and/or `DYLD_LIBRARY_PATH`). Caching is supported using the `actions/cache@v2` action as shown in an example below. The directory the binaries are installed to will be put in the `LLVM_PATH` environment variable.
