@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema#
+name: Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+        version:
+          - 13
+          - 14
+          - 15
+
+    runs-on: "${{ matrix.os }}"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install LLVM
+        uses: ./
+        with:
+          version: "${{ matrix.version }}"
+          env: true
+
+      - name: Test
+        run: |
+          which $CC
+          which $CXX
+          $CC --version
+          $CXX --version

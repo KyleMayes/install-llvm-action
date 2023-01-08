@@ -12,6 +12,7 @@ export interface Options {
   cached: boolean,
   downloadUrl?: string,
   auth?: string,
+  env: boolean,
 }
 
 function getOptions(): Options {
@@ -23,6 +24,7 @@ function getOptions(): Options {
     cached: (core.getInput("cached") || "").toLowerCase() === "true",
     downloadUrl: core.getInput("download-url"),
     auth: core.getInput("auth"),
+    env: (core.getInput("env") ?? "").toLowerCase() === "true",
   };
 }
 
@@ -369,6 +371,11 @@ async function run(options: Options): Promise<void> {
   core.exportVariable("LLVM_PATH", options.directory);
   core.exportVariable("LD_LIBRARY_PATH", `${lib}${path.delimiter}${ld}`);
   core.exportVariable("DYLD_LIBRARY_PATH", `${lib}${path.delimiter}${dyld}`);
+
+  if (options.env) {
+    core.exportVariable("CC", `${options.directory}/bin/clang`);
+    core.exportVariable("CXX", `${options.directory}/bin/clang++`);
+  }
 }
 
 async function main() {

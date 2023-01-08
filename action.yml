@@ -27,6 +27,9 @@ inputs:
   auth:
     description: "The Authorization header to use when downloading LLVM and Clang binaries."
     required: false
+  env:
+    description: "Set CC/CXX environment variables"
+    required: false
 
 outputs:
   version:
