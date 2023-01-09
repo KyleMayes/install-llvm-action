@@ -40,5 +40,6 @@ jobs:
       - name: Test on Windows
         if: runner.os == 'windows'
         run: |
+          echo $LLVM_PATH
           echo $CC
           echo $CXX
