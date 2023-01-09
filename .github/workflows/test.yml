@@ -39,9 +39,6 @@ jobs:
 
       - name: Test on Windows
         if: runner.os == 'windows'
-        shell: pwsh
         run: |
-          echo $CC
-          echo $CXX
-          $CC --version
-          $CXX --version
+          echo %CC%
+          echo %CXX%
