@@ -40,5 +40,5 @@ jobs:
       - name: Test on Windows
         if: runner.os == 'windows'
         run: |
-          echo %CC%
-          echo %CXX%
+          echo $CC
+          echo $CXX
