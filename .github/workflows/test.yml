@@ -42,5 +42,5 @@ jobs:
         run: |
           echo $Env:CC
           echo $Env:CXX
-          $Env:CC --version
-          $Env:CXX --version
+          $Env:CC
+          $Env:CXX
