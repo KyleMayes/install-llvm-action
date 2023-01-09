@@ -44,3 +44,5 @@ jobs:
           echo $Env:CXX
           $Env:CC
           $Env:CXX
+          clang --version
+          clang++ --version
