@@ -40,6 +40,6 @@ jobs:
       - name: Test on Windows
         if: runner.os == 'windows'
         run: |
-          echo $LLVM_PATH
-          echo $CC
-          echo $CXX
+          echo $Env:LLVM_PATH
+          echo $Env:CC
+          echo $Env:CXX
