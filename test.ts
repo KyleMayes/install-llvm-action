@@ -44,6 +44,7 @@ Expected at least two arguments:
       directory: "",
       forceVersion: false,
       cached: false,
+      env: false,
     };
 
     for (const argument of process.argv.slice(start + 3)) {

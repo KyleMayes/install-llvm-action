@@ -1,4 +1,5 @@
 # yaml-language-server: $schema=https://json-schema.org/draft-07/schema#
+
 name: Test
 
 on:
@@ -19,17 +20,18 @@ jobs:
           - 15
 
     runs-on: "${{ matrix.os }}"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install LLVM
+      - name: Install LLVM and Clang
         uses: ./
         with:
           version: "${{ matrix.version }}"
           env: true
 
-      - name: Test
+      - name: Test (Ubuntu / macOS)
         if: runner.os == 'ubuntu' || runner.os == 'macos'
         run: |
           echo $CC
@@ -37,10 +39,10 @@ jobs:
           $CC --version
           $CXX --version
 
-      - name: Test on Windows
+      - name: Test (Windows)
         if: runner.os == 'windows'
         run: |
-          echo $Env:CC
-          echo $Env:CXX
+          echo $env:CC
+          echo $env:CXX
           clang --version
           clang++ --version

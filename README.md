@@ -56,7 +56,7 @@ This is unnecessary unless you are providing a custom download URL using the `do
 
 ### `env`
 
-Whether to set `CC/CXX` environment variables.
+Whether to set `CC` and `CXX` environment variables to Clang paths.
 
 ## Outputs
 
