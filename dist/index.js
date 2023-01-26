@@ -146,7 +146,7 @@ function getOptions() {
     "15.0.3",
     "15.0.4",
     "15.0.5",
-    "15.0.6", 
+    "15.0.6"
 ]);
 /** Gets the ordering of two (specific or minimum) LLVM versions. */ function compareVersions(left, right) {
     const leftComponents = left.split(".").map((c)=>parseInt(c, 10));
@@ -198,7 +198,7 @@ function getOptions() {
     "15.0.3",
     "15.0.4",
     "15.0.5",
-    "15.0.6", 
+    "15.0.6"
 ]);
 /** Gets an LLVM download URL for the Darwin platform. */ function getDarwinUrl(version, options) {
     if (!options.forceVersion && DARWIN_MISSING.has(version)) return null;
@@ -220,7 +220,7 @@ function getOptions() {
     "15.0.1",
     "15.0.2",
     "15.0.3",
-    "15.0.4", 
+    "15.0.4"
 ]);
 /**
  * The LLVM versions that should use the last RC version instead of the release
@@ -282,7 +282,7 @@ function getOptions() {
     else return getReleaseUrl(version, prefix, suffix);
 }
 /** The LLVM versions that were never released for the Windows platform. */ const WIN32_MISSING = new Set([
-    "10.0.1", 
+    "10.0.1"
 ]);
 /** Gets an LLVM download URL for the Windows platform. */ function getWin32Url(version, options) {
     if (!options.forceVersion && WIN32_MISSING.has(version)) return null;
@@ -1021,7 +1021,6 @@ var $021cae4aff4569e6$export$2e2bcd8739ae039 = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5
 
 
 
-
 parcelRequire.register("4sv6r", function(module, exports) {
 "use strict";
 var $33f1e7529990ada4$var$__awaiter = module.exports && module.exports.__awaiter || function(thisArg, _arguments, P, generator) {
@@ -1645,9 +1644,9 @@ class $4478c5f4e442e696$var$HttpClient {
                         else if (contents && contents.length > 0) // it may be the case that the exception is in the body message as string
                         msg = contents;
                         else msg = `Failed request: (${statusCode})`;
-                        const err1 = new $4478c5f4e442e696$var$HttpClientError(msg, statusCode);
-                        err1.result = response.result;
-                        reject(err1);
+                        const err = new $4478c5f4e442e696$var$HttpClientError(msg, statusCode);
+                        err.result = response.result;
+                        reject(err);
                     } else resolve(response);
                 }));
         });
@@ -2632,17 +2631,17 @@ const $27d4e3cc602253c0$var$ioUtil = $27d4e3cc602253c0$var$__importStar((parcelR
                 for (const a of args)cmd += ` ${a}`;
             } else if (options.windowsVerbatimArguments) {
                 cmd += `"${toolPath}"`;
-                for (const a1 of args)cmd += ` ${a1}`;
+                for (const a of args)cmd += ` ${a}`;
             } else {
                 cmd += this._windowsQuoteCmdArg(toolPath);
-                for (const a2 of args)cmd += ` ${this._windowsQuoteCmdArg(a2)}`;
+                for (const a of args)cmd += ` ${this._windowsQuoteCmdArg(a)}`;
             }
         } else {
             // OSX/Linux - this can likely be improved with some form of quoting.
             // creating processes on Unix is fundamentally different than Windows.
             // on Unix, execvp() takes an arg array.
             cmd += toolPath;
-            for (const a3 of args)cmd += ` ${a3}`;
+            for (const a of args)cmd += ` ${a}`;
         }
         return cmd;
     }
@@ -3187,19 +3186,19 @@ module.exports.mv = $5b8bf0b684021e0a$var$mv;
             // Shelling out fails to remove a symlink folder with missing source, this unlink catches that
             try {
                 yield $5b8bf0b684021e0a$var$ioUtil.unlink(inputPath);
-            } catch (err1) {
+            } catch (err) {
                 // if you try to delete a file that doesn't exist, desired result is achieved
                 // other errors are valid
-                if (err1.code !== "ENOENT") throw err1;
+                if (err.code !== "ENOENT") throw err;
             }
         } else {
             let isDir = false;
             try {
                 isDir = yield $5b8bf0b684021e0a$var$ioUtil.isDirectory(inputPath);
-            } catch (err2) {
+            } catch (err) {
                 // if you try to delete a file that doesn't exist, desired result is achieved
                 // other errors are valid
-                if (err2.code !== "ENOENT") throw err2;
+                if (err.code !== "ENOENT") throw err;
                 return;
             }
             if (isDir) yield $5b8bf0b684021e0a$var$exec(`rm -rf "${inputPath}"`);
@@ -3280,8 +3279,8 @@ module.exports.which = $5b8bf0b684021e0a$var$which;
         // find all matches
         const matches = [];
         for (const directory of directories){
-            const filePath1 = yield $5b8bf0b684021e0a$var$ioUtil.tryGetExecutablePath($5b8bf0b684021e0a$var$path.join(directory, tool), extensions);
-            if (filePath1) matches.push(filePath1);
+            const filePath = yield $5b8bf0b684021e0a$var$ioUtil.tryGetExecutablePath($5b8bf0b684021e0a$var$path.join(directory, tool), extensions);
+            if (filePath) matches.push(filePath);
         }
         return matches;
     });
@@ -3486,9 +3485,9 @@ module.exports.mkdirP = $4d4b39e7e3cca916$var$mkdirP;
             stats = undefined;
             try {
                 stats = yield module.exports.stat(filePath);
-            } catch (err1) {
-                if (err1.code !== "ENOENT") // eslint-disable-next-line no-console
-                console.log(`Unexpected error attempting to determine if executable file exists '${filePath}': ${err1}`);
+            } catch (err) {
+                if (err.code !== "ENOENT") // eslint-disable-next-line no-console
+                console.log(`Unexpected error attempting to determine if executable file exists '${filePath}': ${err}`);
             }
             if (stats && stats.isFile()) {
                 if (module.exports.IS_WINDOWS) {
@@ -3500,9 +3499,9 @@ module.exports.mkdirP = $4d4b39e7e3cca916$var$mkdirP;
                             filePath = $4d4b39e7e3cca916$var$path.join(directory, actualName);
                             break;
                         }
-                    } catch (err2) {
+                    } catch (err) {
                         // eslint-disable-next-line no-console
-                        console.log(`Unexpected error attempting to determine the actual case of the file '${filePath}': ${err2}`);
+                        console.log(`Unexpected error attempting to determine the actual case of the file '${filePath}': ${err}`);
                     }
                     return filePath;
                 } else {
@@ -3694,19 +3693,19 @@ module.exports.mv = $666ead8d309dea9e$var$mv;
             // Shelling out fails to remove a symlink folder with missing source, this unlink catches that
             try {
                 yield $666ead8d309dea9e$var$ioUtil.unlink(inputPath);
-            } catch (err1) {
+            } catch (err) {
                 // if you try to delete a file that doesn't exist, desired result is achieved
                 // other errors are valid
-                if (err1.code !== "ENOENT") throw err1;
+                if (err.code !== "ENOENT") throw err;
             }
         } else {
             let isDir = false;
             try {
                 isDir = yield $666ead8d309dea9e$var$ioUtil.isDirectory(inputPath);
-            } catch (err2) {
+            } catch (err) {
                 // if you try to delete a file that doesn't exist, desired result is achieved
                 // other errors are valid
-                if (err2.code !== "ENOENT") throw err2;
+                if (err.code !== "ENOENT") throw err;
                 return;
             }
             if (isDir) yield $666ead8d309dea9e$var$execFile(`rm`, [
@@ -3793,8 +3792,8 @@ module.exports.which = $666ead8d309dea9e$var$which;
         // find all matches
         const matches = [];
         for (const directory of directories){
-            const filePath1 = yield $666ead8d309dea9e$var$ioUtil.tryGetExecutablePath($666ead8d309dea9e$var$path.join(directory, tool), extensions);
-            if (filePath1) matches.push(filePath1);
+            const filePath = yield $666ead8d309dea9e$var$ioUtil.tryGetExecutablePath($666ead8d309dea9e$var$path.join(directory, tool), extensions);
+            if (filePath) matches.push(filePath);
         }
         return matches;
     });
@@ -3983,9 +3982,9 @@ module.exports.isRooted = $c393f7a0a06826fe$var$isRooted;
             stats = undefined;
             try {
                 stats = yield module.exports.stat(filePath);
-            } catch (err1) {
-                if (err1.code !== "ENOENT") // eslint-disable-next-line no-console
-                console.log(`Unexpected error attempting to determine if executable file exists '${filePath}': ${err1}`);
+            } catch (err) {
+                if (err.code !== "ENOENT") // eslint-disable-next-line no-console
+                console.log(`Unexpected error attempting to determine if executable file exists '${filePath}': ${err}`);
             }
             if (stats && stats.isFile()) {
                 if (module.exports.IS_WINDOWS) {
@@ -3997,9 +3996,9 @@ module.exports.isRooted = $c393f7a0a06826fe$var$isRooted;
                             filePath = $c393f7a0a06826fe$var$path.join(directory, actualName);
                             break;
                         }
-                    } catch (err2) {
+                    } catch (err) {
                         // eslint-disable-next-line no-console
-                        console.log(`Unexpected error attempting to determine the actual case of the file '${filePath}': ${err2}`);
+                        console.log(`Unexpected error attempting to determine the actual case of the file '${filePath}': ${err}`);
                     }
                     return filePath;
                 } else {
@@ -4210,8 +4209,8 @@ function $ac4e61474dcd488a$var$downloadToolAttempt(url, dest, auth, headers) {
                 $ac4e61474dcd488a$var$core.debug("download failed");
                 try {
                     yield $ac4e61474dcd488a$var$io.rmRF(dest);
-                } catch (err1) {
-                    $ac4e61474dcd488a$var$core.debug(`Failed to delete '${dest}'. ${err1.message}`);
+                } catch (err) {
+                    $ac4e61474dcd488a$var$core.debug(`Failed to delete '${dest}'. ${err.message}`);
                 }
             }
         }
@@ -4259,7 +4258,7 @@ function $ac4e61474dcd488a$var$downloadToolAttempt(url, dest, auth, headers) {
             const escapedFile = file.replace(/'/g, "''").replace(/"|\n|\r/g, "");
             const escapedTarget = dest.replace(/'/g, "''").replace(/"|\n|\r/g, "");
             const command = `& '${escapedScript}' -Source '${escapedFile}' -Target '${escapedTarget}'`;
-            const args1 = [
+            const args = [
                 "-NoLogo",
                 "-Sta",
                 "-NoProfile",
@@ -4269,12 +4268,12 @@ function $ac4e61474dcd488a$var$downloadToolAttempt(url, dest, auth, headers) {
                 "-Command",
                 command
             ];
-            const options1 = {
+            const options = {
                 silent: true
             };
             try {
                 const powershellPath = yield $ac4e61474dcd488a$var$io.which("powershell", true);
-                yield $2YVDU.exec(`"${powershellPath}"`, args1, options1);
+                yield $2YVDU.exec(`"${powershellPath}"`, args, options);
             } finally{
                 process.chdir(originalCwd);
             }
@@ -4410,7 +4409,7 @@ function $ac4e61474dcd488a$var$extractZipWin(file, dest) {
                 `if ((Get-Command -Name Expand-Archive -Module Microsoft.PowerShell.Archive -ErrorAction Ignore)) { Expand-Archive -LiteralPath '${escapedFile}' -DestinationPath '${escapedDest}' -Force }`,
                 `else {[System.IO.Compression.ZipFile]::ExtractToDirectory('${escapedFile}', '${escapedDest}', $true) }`
             ].join(" ");
-            const args1 = [
+            const args = [
                 "-NoLogo",
                 "-Sta",
                 "-NoProfile",
@@ -4422,7 +4421,7 @@ function $ac4e61474dcd488a$var$extractZipWin(file, dest) {
             ];
             const powershellPath = yield $ac4e61474dcd488a$var$io.which("powershell", true);
             $ac4e61474dcd488a$var$core.debug(`Using powershell at path: ${powershellPath}`);
-            yield $2YVDU.exec(`"${powershellPath}"`, args1);
+            yield $2YVDU.exec(`"${powershellPath}"`, args);
         }
     });
 }
@@ -5202,19 +5201,19 @@ module.exports.mv = $fcb0df4a0c269e31$var$mv;
             // Shelling out fails to remove a symlink folder with missing source, this unlink catches that
             try {
                 yield $fcb0df4a0c269e31$var$ioUtil.unlink(inputPath);
-            } catch (err1) {
+            } catch (err) {
                 // if you try to delete a file that doesn't exist, desired result is achieved
                 // other errors are valid
-                if (err1.code !== "ENOENT") throw err1;
+                if (err.code !== "ENOENT") throw err;
             }
         } else {
             let isDir = false;
             try {
                 isDir = yield $fcb0df4a0c269e31$var$ioUtil.isDirectory(inputPath);
-            } catch (err2) {
+            } catch (err) {
                 // if you try to delete a file that doesn't exist, desired result is achieved
                 // other errors are valid
-                if (err2.code !== "ENOENT") throw err2;
+                if (err.code !== "ENOENT") throw err;
                 return;
             }
             if (isDir) yield $fcb0df4a0c269e31$var$execFile(`rm`, [
@@ -5301,8 +5300,8 @@ module.exports.which = $fcb0df4a0c269e31$var$which;
         // find all matches
         const matches = [];
         for (const directory of directories){
-            const filePath1 = yield $fcb0df4a0c269e31$var$ioUtil.tryGetExecutablePath($fcb0df4a0c269e31$var$path.join(directory, tool), extensions);
-            if (filePath1) matches.push(filePath1);
+            const filePath = yield $fcb0df4a0c269e31$var$ioUtil.tryGetExecutablePath($fcb0df4a0c269e31$var$path.join(directory, tool), extensions);
+            if (filePath) matches.push(filePath);
         }
         return matches;
     });
@@ -5491,9 +5490,9 @@ module.exports.isRooted = $f8f4eefdd2ce4d0d$var$isRooted;
             stats = undefined;
             try {
                 stats = yield module.exports.stat(filePath);
-            } catch (err1) {
-                if (err1.code !== "ENOENT") // eslint-disable-next-line no-console
-                console.log(`Unexpected error attempting to determine if executable file exists '${filePath}': ${err1}`);
+            } catch (err) {
+                if (err.code !== "ENOENT") // eslint-disable-next-line no-console
+                console.log(`Unexpected error attempting to determine if executable file exists '${filePath}': ${err}`);
             }
             if (stats && stats.isFile()) {
                 if (module.exports.IS_WINDOWS) {
@@ -5505,9 +5504,9 @@ module.exports.isRooted = $f8f4eefdd2ce4d0d$var$isRooted;
                             filePath = $f8f4eefdd2ce4d0d$var$path.join(directory, actualName);
                             break;
                         }
-                    } catch (err2) {
+                    } catch (err) {
                         // eslint-disable-next-line no-console
-                        console.log(`Unexpected error attempting to determine the actual case of the file '${filePath}': ${err2}`);
+                        console.log(`Unexpected error attempting to determine the actual case of the file '${filePath}': ${err}`);
                     }
                     return filePath;
                 } else {
@@ -7190,11 +7189,11 @@ class $532ed16875e0b549$var$HttpClient {
                 else if (contents && contents.length > 0) // it may be the case that the exception is in the body message as string
                 msg = contents;
                 else msg = "Failed request: (" + statusCode + ")";
-                let err1 = new Error(msg);
+                let err = new Error(msg);
                 // attach statusCode and body obj (if available) to the error object
-                err1["statusCode"] = statusCode;
-                if (response.result) err1["result"] = response.result;
-                reject(err1);
+                err["statusCode"] = statusCode;
+                if (response.result) err["result"] = response.result;
+                reject(err);
             } else resolve(response);
         });
     }
@@ -7268,6 +7267,8 @@ module.exports = $bd15a05c48f73562$var$v4;
 
 });
 parcelRequire.register("91NtI", function(module, exports) {
+// Unique ID creation requires a high quality random # generator.  In node.js
+// this is pretty straight-forward - we use the crypto API.
 
 module.exports = function nodeRNG() {
     return $8EjUb$crypto.randomBytes(16);
@@ -7457,17 +7458,17 @@ const $ca13a90f6d3d82ae$var$ioUtil = $ca13a90f6d3d82ae$var$__importStar((parcelR
                 for (const a of args)cmd += ` ${a}`;
             } else if (options.windowsVerbatimArguments) {
                 cmd += `"${toolPath}"`;
-                for (const a1 of args)cmd += ` ${a1}`;
+                for (const a of args)cmd += ` ${a}`;
             } else {
                 cmd += this._windowsQuoteCmdArg(toolPath);
-                for (const a2 of args)cmd += ` ${this._windowsQuoteCmdArg(a2)}`;
+                for (const a of args)cmd += ` ${this._windowsQuoteCmdArg(a)}`;
             }
         } else {
             // OSX/Linux - this can likely be improved with some form of quoting.
             // creating processes on Unix is fundamentally different than Windows.
             // on Unix, execvp() takes an arg array.
             cmd += toolPath;
-            for (const a3 of args)cmd += ` ${a3}`;
+            for (const a of args)cmd += ` ${a}`;
         }
         return cmd;
     }
@@ -8010,19 +8011,19 @@ module.exports.mv = $088bad41f25e8ad0$var$mv;
             // Shelling out fails to remove a symlink folder with missing source, this unlink catches that
             try {
                 yield $088bad41f25e8ad0$var$ioUtil.unlink(inputPath);
-            } catch (err1) {
+            } catch (err) {
                 // if you try to delete a file that doesn't exist, desired result is achieved
                 // other errors are valid
-                if (err1.code !== "ENOENT") throw err1;
+                if (err.code !== "ENOENT") throw err;
             }
         } else {
             let isDir = false;
             try {
                 isDir = yield $088bad41f25e8ad0$var$ioUtil.isDirectory(inputPath);
-            } catch (err2) {
+            } catch (err) {
                 // if you try to delete a file that doesn't exist, desired result is achieved
                 // other errors are valid
-                if (err2.code !== "ENOENT") throw err2;
+                if (err.code !== "ENOENT") throw err;
                 return;
             }
             if (isDir) yield $088bad41f25e8ad0$var$exec(`rm -rf "${inputPath}"`);
@@ -8103,8 +8104,8 @@ module.exports.which = $088bad41f25e8ad0$var$which;
         // find all matches
         const matches = [];
         for (const directory of directories){
-            const filePath1 = yield $088bad41f25e8ad0$var$ioUtil.tryGetExecutablePath($088bad41f25e8ad0$var$path.join(directory, tool), extensions);
-            if (filePath1) matches.push(filePath1);
+            const filePath = yield $088bad41f25e8ad0$var$ioUtil.tryGetExecutablePath($088bad41f25e8ad0$var$path.join(directory, tool), extensions);
+            if (filePath) matches.push(filePath);
         }
         return matches;
     });
@@ -8309,9 +8310,9 @@ module.exports.mkdirP = $c316c1e64fe37d24$var$mkdirP;
             stats = undefined;
             try {
                 stats = yield module.exports.stat(filePath);
-            } catch (err1) {
-                if (err1.code !== "ENOENT") // eslint-disable-next-line no-console
-                console.log(`Unexpected error attempting to determine if executable file exists '${filePath}': ${err1}`);
+            } catch (err) {
+                if (err.code !== "ENOENT") // eslint-disable-next-line no-console
+                console.log(`Unexpected error attempting to determine if executable file exists '${filePath}': ${err}`);
             }
             if (stats && stats.isFile()) {
                 if (module.exports.IS_WINDOWS) {
@@ -8323,9 +8324,9 @@ module.exports.mkdirP = $c316c1e64fe37d24$var$mkdirP;
                             filePath = $c316c1e64fe37d24$var$path.join(directory, actualName);
                             break;
                         }
-                    } catch (err2) {
+                    } catch (err) {
                         // eslint-disable-next-line no-console
-                        console.log(`Unexpected error attempting to determine the actual case of the file '${filePath}': ${err2}`);
+                        console.log(`Unexpected error attempting to determine the actual case of the file '${filePath}': ${err}`);
                     }
                     return filePath;
                 } else {
