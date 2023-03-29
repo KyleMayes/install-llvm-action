@@ -16,7 +16,6 @@ jobs:
           - macos-latest
           - windows-latest
         version:
-          - 14
           - 15
 
     runs-on: "${{ matrix.os }}"
