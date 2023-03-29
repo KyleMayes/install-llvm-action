@@ -66,7 +66,7 @@ const VERSIONS: Set<string> = getVersions([
   "12.0.0", "12.0.1",
   "13.0.0", "13.0.1",
   "14.0.0", "14.0.1", "14.0.2", "14.0.3", "14.0.4", "14.0.5", "14.0.6",
-  "15.0.0", "15.0.1", "15.0.2", "15.0.3", "15.0.4", "15.0.5", "15.0.6",
+  "15.0.0", "15.0.1", "15.0.2", "15.0.3", "15.0.4", "15.0.5", "15.0.6", "15.0.7",
 ]);
 
 /** Gets the ordering of two (specific or minimum) LLVM versions. */
@@ -142,6 +142,11 @@ const DARWIN_MISSING: Set<string> = new Set([
   "15.0.6",
 ]);
 
+/** The Darwin version suffixes which are applied for some releases. */
+const DARWIN_VERSIONS: { [key: string]: string } = {
+  "15.0.7": "21.0",
+};
+
 /** Gets an LLVM download URL for the Darwin platform. */
 function getDarwinUrl(version: string, options: Options): string | null {
   if (!options.forceVersion && DARWIN_MISSING.has(version)) {
@@ -150,7 +155,7 @@ function getDarwinUrl(version: string, options: Options): string | null {
 
   const darwin = version === "9.0.0" ? "-darwin-apple" : "-apple-darwin";
   const prefix = "clang+llvm-";
-  const suffix = `-x86_64${darwin}.tar.xz`;
+  const suffix = `-x86_64${darwin}${DARWIN_VERSIONS[version] ?? ""}.tar.xz`;
   if (options.downloadUrl) {
     return getDownloadUrl(options.downloadUrl, version, prefix, suffix);
   } else if (compareVersions(version, "9.0.1") >= 0) {
@@ -173,6 +178,7 @@ const LINUX_MISSING: Set<string> = new Set([
   "15.0.2",
   "15.0.3",
   "15.0.4",
+  "15.0.7",
 ]);
 
 /**
@@ -224,7 +230,7 @@ const UBUNTU: { [key: string]: string } = {
 };
 
 /** The latest supported LLVM version for the Linux (Ubuntu) platform. */
-const MAX_UBUNTU: string = "14.0.6";
+const MAX_UBUNTU: string = "15.0.6";
 
 /** Gets an LLVM download URL for the Linux (Ubuntu) platform. */
 function getLinuxUrl(version: string, options: Options): string | null {
