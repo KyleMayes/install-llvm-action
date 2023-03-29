@@ -4,7 +4,7 @@
 
 A GitHub Action for downloading and installing LLVM and Clang binaries.
 
-The binaries will be added to the relevant environment variables for the platform after installation (e.g., `PATH`, `LD_LIBRARY_PATH`, and/or `DYLD_LIBRARY_PATH`). Caching is supported using the `actions/cache@v2` action as shown in an example below. The directory the binaries are installed to will be put in the `LLVM_PATH` environment variable.
+The binaries will be added to the relevant environment variables for the platform after installation (e.g., `PATH`, `LD_LIBRARY_PATH`, and/or `DYLD_LIBRARY_PATH`). Caching is supported using the `actions/cache@v3` action as shown in an example below. The directory the binaries are installed to will be put in the `LLVM_PATH` environment variable.
 
 Released under the Apache License 2.0.
 
@@ -90,7 +90,7 @@ This will only differ from the value of the `version` option when specifying a m
 ```yml
 - name: Cache LLVM and Clang
   id: cache-llvm
-  uses: actions/cache@v2
+  uses: actions/cache@v3
   with:
     path: |
       C:/Program Files/LLVM
