@@ -152,7 +152,8 @@ function getOptions() {
     "16.0.2",
     "16.0.3",
     "16.0.4",
-    "16.0.5"
+    "16.0.5",
+    "16.0.6"
 ]);
 /** Gets the ordering of two (specific or minimum) LLVM versions. */ function compareVersions(left, right) {
     const leftComponents = left.split(".").map((c)=>parseInt(c, 10));
@@ -210,7 +211,8 @@ function getOptions() {
     "16.0.2",
     "16.0.3",
     "16.0.4",
-    "16.0.5"
+    "16.0.5",
+    "16.0.6"
 ]);
 /** The Darwin version suffixes which are applied for some releases. */ const DARWIN_VERSIONS = {
     "15.0.7": "21.0"
@@ -237,7 +239,9 @@ function getOptions() {
     "15.0.3",
     "15.0.4",
     "15.0.7",
-    "16.0.1"
+    "16.0.1",
+    "16.0.5",
+    "16.0.6"
 ]);
 /**
  * The LLVM versions that should use the last RC version instead of the release
@@ -285,8 +289,7 @@ function getOptions() {
     "16.0.0": "-ubuntu-18.04",
     "16.0.2": "-ubuntu-22.04",
     "16.0.3": "-ubuntu-22.04",
-    "16.0.4": "-ubuntu-22.04",
-    "16.0.5": "-ubuntu-22.04"
+    "16.0.4": "-ubuntu-22.04"
 };
 /** The latest supported LLVM version for the Linux (Ubuntu) platform. */ const MAX_UBUNTU = "16.0.0";
 /** Gets an LLVM download URL for the Linux (Ubuntu) platform. */ function getLinuxUrl(version, options) {
@@ -934,7 +937,7 @@ module.exports.prepareKeyValueMessage = module.exports.issueFileCommand = void 0
 
 const $ecb355cff3772e3b$var$os = $ecb355cff3772e3b$var$__importStar($8EjUb$os);
 
-var $h3frO = parcelRequire("h3frO");
+var $8xoTv = parcelRequire("8xoTv");
 
 var $4pF4Y = parcelRequire("4pF4Y");
 function $ecb355cff3772e3b$var$issueFileCommand(command, message) {
@@ -947,7 +950,7 @@ function $ecb355cff3772e3b$var$issueFileCommand(command, message) {
 }
 module.exports.issueFileCommand = $ecb355cff3772e3b$var$issueFileCommand;
 function $ecb355cff3772e3b$var$prepareKeyValueMessage(key, value) {
-    const delimiter = `ghadelimiter_${$h3frO.default()}`;
+    const delimiter = `ghadelimiter_${$8xoTv.default()}`;
     const convertedValue = $4pF4Y.toCommandValue(value);
     // These should realistically never happen, but just in case someone finds a
     // way to exploit uuid generation let's not allow keys or values that contain
@@ -959,16 +962,16 @@ function $ecb355cff3772e3b$var$prepareKeyValueMessage(key, value) {
 module.exports.prepareKeyValueMessage = $ecb355cff3772e3b$var$prepareKeyValueMessage;
 
 });
-parcelRequire.register("h3frO", function(module, exports) {
+parcelRequire.register("8xoTv", function(module, exports) {
 
-$parcel$export(module.exports, "default", () => $c69eb30cb259fde6$export$2e2bcd8739ae039);
+$parcel$export(module.exports, "default", () => $6374b7417b4f9ee6$export$2e2bcd8739ae039);
 
-var $bbWSS = parcelRequire("bbWSS");
+var $6YLEL = parcelRequire("6YLEL");
 
-var $1d0yU = parcelRequire("1d0yU");
-function $c69eb30cb259fde6$var$v4(options, buf, offset) {
+var $5OiAA = parcelRequire("5OiAA");
+function $6374b7417b4f9ee6$var$v4(options, buf, offset) {
     options = options || {};
-    const rnds = options.random || (options.rng || (0, $bbWSS.default))(); // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+    const rnds = options.random || (options.rng || (0, $6YLEL.default))(); // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
     rnds[6] = rnds[6] & 0x0f | 0x40;
     rnds[8] = rnds[8] & 0x3f | 0x80; // Copy bytes to buffer, if provided
     if (buf) {
@@ -976,66 +979,66 @@ function $c69eb30cb259fde6$var$v4(options, buf, offset) {
         for(let i = 0; i < 16; ++i)buf[offset + i] = rnds[i];
         return buf;
     }
-    return (0, $1d0yU.default)(rnds);
+    return (0, $5OiAA.default)(rnds);
 }
-var $c69eb30cb259fde6$export$2e2bcd8739ae039 = $c69eb30cb259fde6$var$v4;
+var $6374b7417b4f9ee6$export$2e2bcd8739ae039 = $6374b7417b4f9ee6$var$v4;
 
 });
-parcelRequire.register("bbWSS", function(module, exports) {
+parcelRequire.register("6YLEL", function(module, exports) {
 
-$parcel$export(module.exports, "default", () => $825e65f163df0e22$export$2e2bcd8739ae039);
+$parcel$export(module.exports, "default", () => $514d5045764fa9bc$export$2e2bcd8739ae039);
 
-const $825e65f163df0e22$var$rnds8Pool = new Uint8Array(256); // # of random values to pre-allocate
-let $825e65f163df0e22$var$poolPtr = $825e65f163df0e22$var$rnds8Pool.length;
-function $825e65f163df0e22$export$2e2bcd8739ae039() {
-    if ($825e65f163df0e22$var$poolPtr > $825e65f163df0e22$var$rnds8Pool.length - 16) {
-        (0, ($parcel$interopDefault($8EjUb$crypto))).randomFillSync($825e65f163df0e22$var$rnds8Pool);
-        $825e65f163df0e22$var$poolPtr = 0;
+const $514d5045764fa9bc$var$rnds8Pool = new Uint8Array(256); // # of random values to pre-allocate
+let $514d5045764fa9bc$var$poolPtr = $514d5045764fa9bc$var$rnds8Pool.length;
+function $514d5045764fa9bc$export$2e2bcd8739ae039() {
+    if ($514d5045764fa9bc$var$poolPtr > $514d5045764fa9bc$var$rnds8Pool.length - 16) {
+        (0, ($parcel$interopDefault($8EjUb$crypto))).randomFillSync($514d5045764fa9bc$var$rnds8Pool);
+        $514d5045764fa9bc$var$poolPtr = 0;
     }
-    return $825e65f163df0e22$var$rnds8Pool.slice($825e65f163df0e22$var$poolPtr, $825e65f163df0e22$var$poolPtr += 16);
+    return $514d5045764fa9bc$var$rnds8Pool.slice($514d5045764fa9bc$var$poolPtr, $514d5045764fa9bc$var$poolPtr += 16);
 }
 
 });
 
-parcelRequire.register("1d0yU", function(module, exports) {
+parcelRequire.register("5OiAA", function(module, exports) {
 
-$parcel$export(module.exports, "default", () => $0e1770f29045e6ab$export$2e2bcd8739ae039);
+$parcel$export(module.exports, "default", () => $43b00aab26f0d784$export$2e2bcd8739ae039);
 
-var $kf3Q3 = parcelRequire("kf3Q3");
+var $cuy0z = parcelRequire("cuy0z");
 /**
  * Convert array of 16 byte values to UUID string format of the form:
  * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
- */ const $0e1770f29045e6ab$var$byteToHex = [];
-for(let i = 0; i < 256; ++i)$0e1770f29045e6ab$var$byteToHex.push((i + 0x100).toString(16).substr(1));
-function $0e1770f29045e6ab$var$stringify(arr, offset = 0) {
+ */ const $43b00aab26f0d784$var$byteToHex = [];
+for(let i = 0; i < 256; ++i)$43b00aab26f0d784$var$byteToHex.push((i + 0x100).toString(16).substr(1));
+function $43b00aab26f0d784$var$stringify(arr, offset = 0) {
     // Note: Be careful editing this code!  It's been tuned for performance
     // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
-    const uuid = ($0e1770f29045e6ab$var$byteToHex[arr[offset + 0]] + $0e1770f29045e6ab$var$byteToHex[arr[offset + 1]] + $0e1770f29045e6ab$var$byteToHex[arr[offset + 2]] + $0e1770f29045e6ab$var$byteToHex[arr[offset + 3]] + "-" + $0e1770f29045e6ab$var$byteToHex[arr[offset + 4]] + $0e1770f29045e6ab$var$byteToHex[arr[offset + 5]] + "-" + $0e1770f29045e6ab$var$byteToHex[arr[offset + 6]] + $0e1770f29045e6ab$var$byteToHex[arr[offset + 7]] + "-" + $0e1770f29045e6ab$var$byteToHex[arr[offset + 8]] + $0e1770f29045e6ab$var$byteToHex[arr[offset + 9]] + "-" + $0e1770f29045e6ab$var$byteToHex[arr[offset + 10]] + $0e1770f29045e6ab$var$byteToHex[arr[offset + 11]] + $0e1770f29045e6ab$var$byteToHex[arr[offset + 12]] + $0e1770f29045e6ab$var$byteToHex[arr[offset + 13]] + $0e1770f29045e6ab$var$byteToHex[arr[offset + 14]] + $0e1770f29045e6ab$var$byteToHex[arr[offset + 15]]).toLowerCase(); // Consistency check for valid UUID.  If this throws, it's likely due to one
+    const uuid = ($43b00aab26f0d784$var$byteToHex[arr[offset + 0]] + $43b00aab26f0d784$var$byteToHex[arr[offset + 1]] + $43b00aab26f0d784$var$byteToHex[arr[offset + 2]] + $43b00aab26f0d784$var$byteToHex[arr[offset + 3]] + "-" + $43b00aab26f0d784$var$byteToHex[arr[offset + 4]] + $43b00aab26f0d784$var$byteToHex[arr[offset + 5]] + "-" + $43b00aab26f0d784$var$byteToHex[arr[offset + 6]] + $43b00aab26f0d784$var$byteToHex[arr[offset + 7]] + "-" + $43b00aab26f0d784$var$byteToHex[arr[offset + 8]] + $43b00aab26f0d784$var$byteToHex[arr[offset + 9]] + "-" + $43b00aab26f0d784$var$byteToHex[arr[offset + 10]] + $43b00aab26f0d784$var$byteToHex[arr[offset + 11]] + $43b00aab26f0d784$var$byteToHex[arr[offset + 12]] + $43b00aab26f0d784$var$byteToHex[arr[offset + 13]] + $43b00aab26f0d784$var$byteToHex[arr[offset + 14]] + $43b00aab26f0d784$var$byteToHex[arr[offset + 15]]).toLowerCase(); // Consistency check for valid UUID.  If this throws, it's likely due to one
     // of the following:
     // - One or more input array values don't map to a hex octet (leading to
     // "undefined" in the uuid)
     // - Invalid input values for the RFC `version` or `variant` fields
-    if (!(0, $kf3Q3.default)(uuid)) throw TypeError("Stringified UUID is invalid");
+    if (!(0, $cuy0z.default)(uuid)) throw TypeError("Stringified UUID is invalid");
     return uuid;
 }
-var $0e1770f29045e6ab$export$2e2bcd8739ae039 = $0e1770f29045e6ab$var$stringify;
+var $43b00aab26f0d784$export$2e2bcd8739ae039 = $43b00aab26f0d784$var$stringify;
 
 });
-parcelRequire.register("kf3Q3", function(module, exports) {
+parcelRequire.register("cuy0z", function(module, exports) {
 
-$parcel$export(module.exports, "default", () => $ebc82f9fb70ff86b$export$2e2bcd8739ae039);
+$parcel$export(module.exports, "default", () => $9182aaac4fa820e1$export$2e2bcd8739ae039);
 
-var $feTBK = parcelRequire("feTBK");
-function $ebc82f9fb70ff86b$var$validate(uuid) {
-    return typeof uuid === "string" && (0, $feTBK.default).test(uuid);
+var $bf1rh = parcelRequire("bf1rh");
+function $9182aaac4fa820e1$var$validate(uuid) {
+    return typeof uuid === "string" && (0, $bf1rh.default).test(uuid);
 }
-var $ebc82f9fb70ff86b$export$2e2bcd8739ae039 = $ebc82f9fb70ff86b$var$validate;
+var $9182aaac4fa820e1$export$2e2bcd8739ae039 = $9182aaac4fa820e1$var$validate;
 
 });
-parcelRequire.register("feTBK", function(module, exports) {
+parcelRequire.register("bf1rh", function(module, exports) {
 
-$parcel$export(module.exports, "default", () => $b1834c64d4c75ad7$export$2e2bcd8739ae039);
-var $b1834c64d4c75ad7$export$2e2bcd8739ae039 = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
+$parcel$export(module.exports, "default", () => $021cae4aff4569e6$export$2e2bcd8739ae039);
+var $021cae4aff4569e6$export$2e2bcd8739ae039 = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
 
 });
 
@@ -4150,7 +4153,7 @@ const $ac4e61474dcd488a$var$stream = $ac4e61474dcd488a$var$__importStar($8EjUb$s
 const $ac4e61474dcd488a$var$util = $ac4e61474dcd488a$var$__importStar($8EjUb$util);
 
 
-const $ac4e61474dcd488a$var$v4_1 = $ac4e61474dcd488a$var$__importDefault((parcelRequire("7KRc5")));
+const $ac4e61474dcd488a$var$v4_1 = $ac4e61474dcd488a$var$__importDefault((parcelRequire("geuwa")));
 
 var $2YVDU = parcelRequire("2YVDU");
 
@@ -6784,30 +6787,30 @@ function coerce(version, options) {
 });
 
 
-parcelRequire.register("7KRc5", function(module, exports) {
+parcelRequire.register("geuwa", function(module, exports) {
 
-var $hgtwT = parcelRequire("hgtwT");
+var $91NtI = parcelRequire("91NtI");
 
-var $8Bdn0 = parcelRequire("8Bdn0");
-function $5a56177e265a6065$var$v4(options, buf, offset) {
+var $jJzfm = parcelRequire("jJzfm");
+function $bd15a05c48f73562$var$v4(options, buf, offset) {
     var i = buf && offset || 0;
     if (typeof options == "string") {
         buf = options === "binary" ? new Array(16) : null;
         options = null;
     }
     options = options || {};
-    var rnds = options.random || (options.rng || $hgtwT)();
+    var rnds = options.random || (options.rng || $91NtI)();
     // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
     rnds[6] = rnds[6] & 0x0f | 0x40;
     rnds[8] = rnds[8] & 0x3f | 0x80;
     // Copy bytes to buffer, if provided
     if (buf) for(var ii = 0; ii < 16; ++ii)buf[i + ii] = rnds[ii];
-    return buf || $8Bdn0(rnds);
+    return buf || $jJzfm(rnds);
 }
-module.exports = $5a56177e265a6065$var$v4;
+module.exports = $bd15a05c48f73562$var$v4;
 
 });
-parcelRequire.register("hgtwT", function(module, exports) {
+parcelRequire.register("91NtI", function(module, exports) {
 // Unique ID creation requires a high quality random # generator.  In node.js
 // this is pretty straight-forward - we use the crypto API.
 
@@ -6817,15 +6820,15 @@ module.exports = function nodeRNG() {
 
 });
 
-parcelRequire.register("8Bdn0", function(module, exports) {
+parcelRequire.register("jJzfm", function(module, exports) {
 /**
  * Convert array of 16 byte values to UUID string format of the form:
  * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
- */ var $642c266d2475d05b$var$byteToHex = [];
-for(var $642c266d2475d05b$var$i = 0; $642c266d2475d05b$var$i < 256; ++$642c266d2475d05b$var$i)$642c266d2475d05b$var$byteToHex[$642c266d2475d05b$var$i] = ($642c266d2475d05b$var$i + 0x100).toString(16).substr(1);
-function $642c266d2475d05b$var$bytesToUuid(buf, offset) {
+ */ var $e5dd8f91359a1efe$var$byteToHex = [];
+for(var $e5dd8f91359a1efe$var$i = 0; $e5dd8f91359a1efe$var$i < 256; ++$e5dd8f91359a1efe$var$i)$e5dd8f91359a1efe$var$byteToHex[$e5dd8f91359a1efe$var$i] = ($e5dd8f91359a1efe$var$i + 0x100).toString(16).substr(1);
+function $e5dd8f91359a1efe$var$bytesToUuid(buf, offset) {
     var i = offset || 0;
-    var bth = $642c266d2475d05b$var$byteToHex;
+    var bth = $e5dd8f91359a1efe$var$byteToHex;
     // join used to fix memory issue caused by concatenation: https://bugs.chromium.org/p/v8/issues/detail?id=3175#c4
     return [
         bth[buf[i++]],
@@ -6850,7 +6853,7 @@ function $642c266d2475d05b$var$bytesToUuid(buf, offset) {
         bth[buf[i++]]
     ].join("");
 }
-module.exports = $642c266d2475d05b$var$bytesToUuid;
+module.exports = $e5dd8f91359a1efe$var$bytesToUuid;
 
 });
 
