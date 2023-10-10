@@ -277,7 +277,9 @@ function getLinuxUrl(version: string, options: Options): string | null {
 
   const prefix = "clang+llvm-";
   const suffix = `-x86_64-linux-gnu${ubuntu}.tar.xz`;
-  if (compareVersions(version, "9.0.1") >= 0) {
+  if (options.downloadUrl) {
+    return getDownloadUrl(options.downloadUrl, version, prefix, suffix);
+  } else if (compareVersions(version, "9.0.1") >= 0) {
     return getGitHubUrl(version, prefix, suffix);
   } else {
     return getReleaseUrl(version, prefix, suffix);
@@ -297,7 +299,9 @@ function getWin32Url(version: string, options: Options): string | null {
 
   const prefix = "LLVM-";
   const suffix = compareVersions(version, "3.7.0") >= 0 ? "-win64.exe" : "-win32.exe";
-  if (compareVersions(version, "9.0.1") >= 0) {
+  if (options.downloadUrl) {
+    return getDownloadUrl(options.downloadUrl, version, prefix, suffix);
+  } else if (compareVersions(version, "9.0.1") >= 0) {
     return getGitHubUrl(version, prefix, suffix);
   } else {
     return getReleaseUrl(version, prefix, suffix);
