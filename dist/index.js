@@ -308,7 +308,8 @@ function getOptions() {
     if (!ubuntu) return null;
     const prefix = "clang+llvm-";
     const suffix = `-x86_64-linux-gnu${ubuntu}.tar.xz`;
-    if (compareVersions(version, "9.0.1") >= 0) return getGitHubUrl(version, prefix, suffix);
+    if (options.downloadUrl) return getDownloadUrl(options.downloadUrl, version, prefix, suffix);
+    else if (compareVersions(version, "9.0.1") >= 0) return getGitHubUrl(version, prefix, suffix);
     else return getReleaseUrl(version, prefix, suffix);
 }
 /** The LLVM versions that were never released for the Windows platform. */ const WIN32_MISSING = new Set([
@@ -318,7 +319,8 @@ function getOptions() {
     if (!options.forceVersion && WIN32_MISSING.has(version)) return null;
     const prefix = "LLVM-";
     const suffix = compareVersions(version, "3.7.0") >= 0 ? "-win64.exe" : "-win32.exe";
-    if (compareVersions(version, "9.0.1") >= 0) return getGitHubUrl(version, prefix, suffix);
+    if (options.downloadUrl) return getDownloadUrl(options.downloadUrl, version, prefix, suffix);
+    else if (compareVersions(version, "9.0.1") >= 0) return getGitHubUrl(version, prefix, suffix);
     else return getReleaseUrl(version, prefix, suffix);
 }
 /** Gets an LLVM download URL. */ function getUrl(platform, version, options) {
