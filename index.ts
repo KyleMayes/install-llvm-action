@@ -68,6 +68,7 @@ const VERSIONS: Set<string> = getVersions([
   "14.0.0", "14.0.1", "14.0.2", "14.0.3", "14.0.4", "14.0.5", "14.0.6",
   "15.0.0", "15.0.1", "15.0.2", "15.0.3", "15.0.4", "15.0.5", "15.0.6", "15.0.7",
   "16.0.0", "16.0.1", "16.0.2", "16.0.3", "16.0.4", "16.0.5", "16.0.6",
+  "17.0.1", "17.0.2",
 ]);
 
 /** Gets the ordering of two (specific or minimum) LLVM versions. */
@@ -148,6 +149,8 @@ const DARWIN_MISSING: Set<string> = new Set([
   "16.0.4",
   "16.0.5",
   "16.0.6",
+  "17.0.1",
+  "17.0.2",
 ]);
 
 /** The Darwin version suffixes which are applied for some releases. */
@@ -242,6 +245,7 @@ const UBUNTU: { [key: string]: string } = {
   "16.0.2": "-ubuntu-22.04",
   "16.0.3": "-ubuntu-22.04",
   "16.0.4": "-ubuntu-22.04",
+  "17.0.2": "-ubuntu-22.04",
 };
 
 /** The latest supported LLVM version for the Linux (Ubuntu) platform. */

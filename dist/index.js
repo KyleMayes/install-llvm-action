@@ -153,7 +153,9 @@ function getOptions() {
     "16.0.3",
     "16.0.4",
     "16.0.5",
-    "16.0.6"
+    "16.0.6",
+    "17.0.1",
+    "17.0.2"
 ]);
 /** Gets the ordering of two (specific or minimum) LLVM versions. */ function compareVersions(left, right) {
     const leftComponents = left.split(".").map((c)=>parseInt(c, 10));
@@ -212,7 +214,9 @@ function getOptions() {
     "16.0.3",
     "16.0.4",
     "16.0.5",
-    "16.0.6"
+    "16.0.6",
+    "17.0.1",
+    "17.0.2"
 ]);
 /** The Darwin version suffixes which are applied for some releases. */ const DARWIN_VERSIONS = {
     "15.0.7": "21.0"
@@ -289,7 +293,8 @@ function getOptions() {
     "16.0.0": "-ubuntu-18.04",
     "16.0.2": "-ubuntu-22.04",
     "16.0.3": "-ubuntu-22.04",
-    "16.0.4": "-ubuntu-22.04"
+    "16.0.4": "-ubuntu-22.04",
+    "17.0.2": "-ubuntu-22.04"
 };
 /** The latest supported LLVM version for the Linux (Ubuntu) platform. */ const MAX_UBUNTU = "16.0.0";
 /** Gets an LLVM download URL for the Linux (Ubuntu) platform. */ function getLinuxUrl(version, options) {
