@@ -36,5 +36,5 @@ outputs:
     description: "The full version of LLVM and Clang binaries installed."
 
 runs:
-  using: "node16"
+  using: "node20"
   main: "dist/index.js"
