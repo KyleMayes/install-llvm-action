@@ -42,6 +42,8 @@ For a given LLVM and Clang version, there are sometimes multiple binaries availa
 
 Whether the LLVM and Clang binaries were cached.
 
+**Note:** Caching is not currently recommended, it is usually slower than just directly downloading the LLVM and Clang binaries.
+
 ### `download-url`
 
 The URL to download LLVM and Clang binaries from.
@@ -84,26 +86,6 @@ This will only differ from the value of the `version` option when specifying a m
     version: "10.0"
     directory: ${{ runner.temp }}/llvm
 ```
-
-## Example Usage (with caching)
-
-```yml
-- name: Cache LLVM and Clang
-  id: cache-llvm
-  uses: actions/cache@v3
-  with:
-    path: |
-      C:/Program Files/LLVM
-      ./llvm
-    key: llvm-3.5
-- name: Install LLVM and Clang
-  uses: KyleMayes/install-llvm-action@v1
-  with:
-    version: "3.5"
-    cached: ${{ steps.cache-llvm.outputs.cache-hit }}
-```
-
-**Note:** Based on some benchmarks on a GitHub Actions Ubuntu runner, an uncached install of the LLVM and Clang binaries using this action takes about 60 seconds but a cached install takes only about 20 seconds.
 
 ## Linking to Installed Libraries (Linux)
 
