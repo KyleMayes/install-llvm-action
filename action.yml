@@ -24,6 +24,9 @@ inputs:
   download-url:
     description: "The URL to download LLVM and Clang binaries from."
     required: false
+  arch:
+    description: The arch of the file you'd like to install
+    required: false
   auth:
     description: "The Authorization header to use when downloading LLVM and Clang binaries."
     required: false
