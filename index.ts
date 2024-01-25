@@ -11,6 +11,7 @@ export interface Options {
   ubuntuVersion?: string,
   cached: boolean,
   downloadUrl?: string,
+  arch?: string,
   auth?: string,
   env: boolean,
 }
@@ -23,6 +24,7 @@ function getOptions(): Options {
     directory: core.getInput("directory"),
     cached: (core.getInput("cached") || "").toLowerCase() === "true",
     downloadUrl: core.getInput("download-url"),
+    arch: core.getInput("arch"),
     auth: core.getInput("auth"),
     env: (core.getInput("env") ?? "").toLowerCase() === "true",
   };
@@ -68,7 +70,7 @@ const VERSIONS: Set<string> = getVersions([
   "14.0.0", "14.0.1", "14.0.2", "14.0.3", "14.0.4", "14.0.5", "14.0.6",
   "15.0.0", "15.0.1", "15.0.2", "15.0.3", "15.0.4", "15.0.5", "15.0.6", "15.0.7",
   "16.0.0", "16.0.1", "16.0.2", "16.0.3", "16.0.4", "16.0.5", "16.0.6",
-  "17.0.1", "17.0.2",
+  "17.0.0", "17.0.1", "17.0.2", "17.0.3", "17.0.4", "17.0.5", "17.0.6",
 ]);
 
 /** Gets the ordering of two (specific or minimum) LLVM versions. */
@@ -166,7 +168,7 @@ function getDarwinUrl(version: string, options: Options): string | null {
 
   const darwin = version === "9.0.0" ? "-darwin-apple" : "-apple-darwin";
   const prefix = "clang+llvm-";
-  const suffix = `-x86_64${darwin}${DARWIN_VERSIONS[version] ?? ""}.tar.xz`;
+  const suffix = `-${options.arch ?? "x86_64"}${darwin}${DARWIN_VERSIONS[version] ?? ""}.tar.xz`;
   if (options.downloadUrl) {
     return getDownloadUrl(options.downloadUrl, version, prefix, suffix);
   } else if (compareVersions(version, "9.0.1") >= 0) {
@@ -276,7 +278,7 @@ function getLinuxUrl(version: string, options: Options): string | null {
   }
 
   const prefix = "clang+llvm-";
-  const suffix = `-x86_64-linux-gnu${ubuntu}.tar.xz`;
+  const suffix = `-${options.arch ??"x86_64"}-linux-gnu${ubuntu}.tar.xz`;
   if (options.downloadUrl) {
     return getDownloadUrl(options.downloadUrl, version, prefix, suffix);
   } else if (compareVersions(version, "9.0.1") >= 0) {
