@@ -8,6 +8,36 @@ The binaries will be added to the relevant environment variables for the platfor
 
 Released under the Apache License 2.0.
 
+## Example Usage
+
+```yml
+- name: Install LLVM and Clang
+  uses: KyleMayes/install-llvm-action@v1
+  with:
+    version: "10.0"
+```
+
+## Example Usage (with non-default installation directory):
+
+```yml
+- name: Install LLVM and Clang
+  uses: KyleMayes/install-llvm-action@v1
+  with:
+    version: "10.0"
+    directory: ${{ runner.temp }}/llvm
+```
+
+## Linking to Installed Libraries (Linux)
+
+If your build system requires a library from the installed LLVM and Clang binaries such as `libclang.so`, and it fails to find it, then it may help to create a symlink for the versioned `.so` using the following step which utilizes the `LLVM_PATH` environment variable set by this action:
+
+```yaml
+- name: Symlink libclang.so (Linux)
+  if: contains(matrix.os, 'ubuntu')
+  run: sudo ln -s libclang-11.so.1 /lib/x86_64-linux-gnu/libclang.so
+  working-directory: ${{ env.LLVM_PATH }}/lib
+```
+
 ## Inputs
 
 ### `version`
@@ -67,33 +97,3 @@ Whether to set `CC` and `CXX` environment variables to Clang paths.
 The full version of LLVM and Clang binaries installed.
 
 This will only differ from the value of the `version` option when specifying a minimum version like `3.6` or `3`.
-
-## Example Usage
-
-```yml
-- name: Install LLVM and Clang
-  uses: KyleMayes/install-llvm-action@v1
-  with:
-    version: "10.0"
-```
-
-## Example Usage (with non-default installation directory):
-
-```yml
-- name: Install LLVM and Clang
-  uses: KyleMayes/install-llvm-action@v1
-  with:
-    version: "10.0"
-    directory: ${{ runner.temp }}/llvm
-```
-
-## Linking to Installed Libraries (Linux)
-
-If your build system requires a library from the installed LLVM and Clang binaries such as `libclang.so`, and it fails to find it, then it may help to create a symlink for the versioned `.so` using the following step which utilizes the `LLVM_PATH` environment variable set by this action:
-
-```yaml
-- name: Symlink libclang.so (Linux)
-  if: contains(matrix.os, 'ubuntu')
-  run: sudo ln -s libclang-11.so.1 /lib/x86_64-linux-gnu/libclang.so
-  working-directory: ${{ env.LLVM_PATH }}/lib
-```
