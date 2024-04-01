@@ -33,7 +33,7 @@ jobs:
           env: true
 
       - name: Test (Ubuntu / macOS)
-        if: runner.os == 'ubuntu' || runner.os == 'macos'
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
         run: |
           echo $CC
           echo $CXX
@@ -41,7 +41,7 @@ jobs:
           $CXX --version
 
       - name: Test (Windows)
-        if: runner.os == 'windows'
+        if: matrix.os == 'windows-latest'
         run: |
           echo $env:CC
           echo $env:CXX
