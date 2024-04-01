@@ -6,7 +6,8 @@
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "scripts": {
-    "format": "prettier --write src/*.ts",
+    "format": "prettier --write *.ts",
+    "generate": "ts-node generate.ts",
     "build": "parcel build index.ts",
     "test": "ts-node test.ts test"
   },
@@ -17,7 +18,10 @@
     "@actions/tool-cache": "~2.0.1"
   },
   "devDependencies": {
+    "@octokit/rest": "^20",
+    "@types/lodash": "^4",
     "@types/node": "~20",
+    "lodash": "^4",
     "parcel": "^2",
     "ts-node": "^10",
     "typescript": "^5"

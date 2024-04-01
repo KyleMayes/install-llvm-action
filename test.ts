@@ -1,19 +1,17 @@
 import * as https from "https";
 
-import { Options, getSpecificVersionAndUrl } from './index';
+import { Options, getAsset } from "./index";
 
-async function test(platform: string, options: Options): Promise<void> {
-  const [specificVersion, url] = getSpecificVersionAndUrl(platform, options);
+async function test(os: string, options: Options): Promise<void> {
+  const { specificVersion, url } = getAsset(os, options);
 
   console.log(`Version: ${options.version} => ${specificVersion}`);
-  console.log(`Force version: ${options.forceVersion}`);
-  console.log(`Ubuntu version: ${options.ubuntuVersion || "<default>"}`);
   console.log(`URL: ${url}`);
 
   return new Promise((resolve, reject) => {
     https.get(url, res => {
       console.log(`Status: ${res.statusCode}`);
-      console.log(`Content-Length: ${res.headers["content-length"]}`)
+      console.log(`Content-Length: ${res.headers["content-length"]}`);
       if (res.statusCode && res.statusCode >= 200 && res.statusCode <= 399) {
         resolve();
       } else {
@@ -29,20 +27,19 @@ async function main() {
   if (process.argv.length < start + 3) {
     console.error(`\
 Expected at least two arguments:
-  1. <platform>
+  1. <os>
   2. <version>
-  3. --forceVersion=<forceVersion> (optional)
-  4. --ubuntuVersion=<ubuntuVersion> (optional)`)
+  3. --arch=<arch> (optional)
+  4. --force-url=<force-url> (optional)`);
     process.exit(1);
   }
 
   try {
-    const platform = process.argv[start + 1];
+    const os = process.argv[start + 1];
 
     const options: Options = {
       version: process.argv[start + 2],
       directory: "",
-      forceVersion: false,
       cached: false,
       env: false,
     };
@@ -50,11 +47,11 @@ Expected at least two arguments:
     for (const argument of process.argv.slice(start + 3)) {
       const [name, value] = argument.split("=");
       switch (name) {
-        case "--forceVersion":
-          options.forceVersion = value.toLowerCase() === "true";
+        case "--arch":
+          options.arch = value;
           break;
-        case "--ubuntuVersion":
-          options.ubuntuVersion = value;
+        case "--force-url":
+          options.forceUrl = value;
           break;
         default:
           console.error(`Invalid argument: ${argument}`);
@@ -65,7 +62,8 @@ Expected at least two arguments:
 
     console.log(`Options: ${JSON.stringify(options, null, "  ")}`);
 
-    await test(platform, options);
+    await test(os, options);
+    process.exit(0);
   } catch (error: any) {
     console.error(error.stack);
     process.exit(1);

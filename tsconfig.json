@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
+    "esModuleInterop": true,
     "lib": ["ES2023"],
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "strict": true
   },
-  "files": ["./index.ts", "./test.ts"]
+  "files": ["./generate.ts", "./index.ts", "./test.ts"]
 }

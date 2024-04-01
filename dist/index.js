@@ -60,7 +60,7 @@ if (parcelRequire == null) {
 }
 parcelRequire.register("5QGG7", function(module, exports) {
 
-$parcel$export(module.exports, "getSpecificVersionAndUrl", () => getSpecificVersionAndUrl, (v) => getSpecificVersionAndUrl = v);
+$parcel$export(module.exports, "getAsset", () => getAsset, (v) => getAsset = v);
 
 var $iL6dd = parcelRequire("iL6dd");
 
@@ -70,14 +70,17 @@ var $7C30t = parcelRequire("7C30t");
 
 var $jttxK = parcelRequire("jttxK");
 
+
+var $ldDhk = parcelRequire("ldDhk");
+const ASSETS = $ldDhk;
 function getOptions() {
     return {
         version: $iL6dd.getInput("version"),
-        forceVersion: ($iL6dd.getInput("force-version") || "").toLowerCase() === "true",
-        ubuntuVersion: $iL6dd.getInput("ubuntu-version"),
+        arch: $iL6dd.getInput("arch"),
+        forceUrl: $iL6dd.getInput("force-url"),
         directory: $iL6dd.getInput("directory"),
-        cached: ($iL6dd.getInput("cached") || "").toLowerCase() === "true",
-        downloadUrl: $iL6dd.getInput("download-url"),
+        cached: ($iL6dd.getInput("cached") ?? "").toLowerCase() === "true",
+        mirrorUrl: $iL6dd.getInput("mirror-url"),
         auth: $iL6dd.getInput("auth"),
         env: ($iL6dd.getInput("env") ?? "").toLowerCase() === "true"
     };
@@ -86,269 +89,35 @@ function getOptions() {
 // Version
 //================================================
 /**
- * Gets the specific and minimum LLVM versions that can be used to refer to the
- * supplied specific LLVM versions (e.g., `3`, `3.5`, `3.5.2` for `3.5.2`).
- */ function getVersions(specific) {
-    const versions = new Set(specific);
-    for (const version of specific){
-        versions.add(/^\d+/.exec(version)[0]);
-        versions.add(/^\d+\.\d+/.exec(version)[0]);
-    }
-    return versions;
-}
-/** The specific and minimum LLVM versions supported by this action. */ const VERSIONS = getVersions([
-    "3.5.0",
-    "3.5.1",
-    "3.5.2",
-    "3.6.0",
-    "3.6.1",
-    "3.6.2",
-    "3.7.0",
-    "3.7.1",
-    "3.8.0",
-    "3.8.1",
-    "3.9.0",
-    "3.9.1",
-    "4.0.0",
-    "4.0.1",
-    "5.0.0",
-    "5.0.1",
-    "5.0.2",
-    "6.0.0",
-    "6.0.1",
-    "7.0.0",
-    "7.0.1",
-    "7.1.0",
-    "8.0.0",
-    "8.0.1",
-    "9.0.0",
-    "9.0.1",
-    "10.0.0",
-    "10.0.1",
-    "11.0.0",
-    "11.0.1",
-    "11.1.0",
-    "12.0.0",
-    "12.0.1",
-    "13.0.0",
-    "13.0.1",
-    "14.0.0",
-    "14.0.1",
-    "14.0.2",
-    "14.0.3",
-    "14.0.4",
-    "14.0.5",
-    "14.0.6",
-    "15.0.0",
-    "15.0.1",
-    "15.0.2",
-    "15.0.3",
-    "15.0.4",
-    "15.0.5",
-    "15.0.6",
-    "15.0.7",
-    "16.0.0",
-    "16.0.1",
-    "16.0.2",
-    "16.0.3",
-    "16.0.4",
-    "16.0.5",
-    "16.0.6",
-    "17.0.1",
-    "17.0.2"
-]);
-/** Gets the ordering of two (specific or minimum) LLVM versions. */ function compareVersions(left, right) {
-    const leftComponents = left.split(".").map((c)=>parseInt(c, 10));
-    const rightComponents = right.split(".").map((c)=>parseInt(c, 10));
-    const length = Math.max(leftComponents.length, rightComponents.length);
-    for(let i = 0; i < length; ++i){
-        const leftComponent = leftComponents[i] || 0;
-        const rightComponent = rightComponents[i] || 0;
-        if (leftComponent > rightComponent) return 1;
-        else if (leftComponent < rightComponent) return -1;
-    }
-    return 0;
-}
-/**
  * Gets the specific LLVM versions supported by this action compatible with the
  * supplied (specific or minimum) LLVM version in descending order of release
  * (e.g., `5.0.2`, `5.0.1`, and `5.0.0` for `5`).
- */ function getSpecificVersions(version) {
-    return Array.from(VERSIONS).filter((v)=>/^\d+\.\d+\.\d+$/.test(v) && v.startsWith(version)).sort().reverse();
+ */ function getSpecificVersions(specificVersions, version) {
+    return Array.from(specificVersions).filter((v)=>/^\d+\.\d+\.\d+$/.test(v) && v.startsWith(`${version}.`)).sort().reverse();
 }
-//================================================
-// URL
-//================================================
-/** Gets a LLVM download URL for GitHub release mirror like artifactory. */ function getDownloadUrl(baseUrl, version, prefix, suffix) {
-    const file = `${prefix}${version}${suffix}`;
-    return `${baseUrl}/${file}`;
-}
-/** Gets a LLVM download URL for GitHub. */ function getGitHubUrl(version, prefix, suffix) {
-    return getDownloadUrl(`https://github.com/llvm/llvm-project/releases/download/llvmorg-${version}`, version, prefix, suffix);
-}
-/** Gets a LLVM download URL for https://releases.llvm.org. */ function getReleaseUrl(version, prefix, suffix) {
-    const file = `${prefix}${version}${suffix}`;
-    return `https://releases.llvm.org/${version}/${file}`;
-}
-/** The LLVM versions that were never released for the Darwin platform. */ const DARWIN_MISSING = new Set([
-    "3.5.1",
-    "3.6.1",
-    "3.6.2",
-    "3.7.1",
-    "3.8.1",
-    "3.9.1",
-    "6.0.1",
-    "7.0.1",
-    "7.1.0",
-    "8.0.1",
-    "11.0.1",
-    "11.1.0",
-    "12.0.1",
-    "15.0.3",
-    "15.0.4",
-    "15.0.5",
-    "15.0.6",
-    "16.0.0",
-    "16.0.1",
-    "16.0.2",
-    "16.0.3",
-    "16.0.4",
-    "16.0.5",
-    "16.0.6",
-    "17.0.1",
-    "17.0.2"
-]);
-/** The Darwin version suffixes which are applied for some releases. */ const DARWIN_VERSIONS = {
-    "15.0.7": "21.0"
-};
-/** Gets an LLVM download URL for the Darwin platform. */ function getDarwinUrl(version, options) {
-    if (!options.forceVersion && DARWIN_MISSING.has(version)) return null;
-    const darwin = version === "9.0.0" ? "-darwin-apple" : "-apple-darwin";
-    const prefix = "clang+llvm-";
-    const suffix = `-x86_64${darwin}${DARWIN_VERSIONS[version] ?? ""}.tar.xz`;
-    if (options.downloadUrl) return getDownloadUrl(options.downloadUrl, version, prefix, suffix);
-    else if (compareVersions(version, "9.0.1") >= 0) return getGitHubUrl(version, prefix, suffix);
-    else return getReleaseUrl(version, prefix, suffix);
-}
-/** The LLVM versions that were never released for the Linux platform. */ const LINUX_MISSING = new Set([
-    "14.0.1",
-    "14.0.2",
-    "14.0.3",
-    "14.0.4",
-    "14.0.5",
-    "14.0.6",
-    "15.0.0",
-    "15.0.1",
-    "15.0.2",
-    "15.0.3",
-    "15.0.4",
-    "15.0.7",
-    "16.0.1",
-    "16.0.5",
-    "16.0.6"
-]);
-/**
- * The LLVM versions that should use the last RC version instead of the release
- * version for the Linux (Ubuntu) platform. This is useful when there were
- * binaries released for the Linux (Ubuntu) platform for the last RC version but
- * not for the actual release version.
- */ const UBUNTU_RC = new Map([]);
-/** The (latest) Ubuntu versions for each LLVM version. */ const UBUNTU = {
-    "3.5.0": "-ubuntu-14.04",
-    "3.5.1": "",
-    "3.5.2": "-ubuntu-14.04",
-    "3.6.0": "-ubuntu-14.04",
-    "3.6.1": "-ubuntu-14.04",
-    "3.6.2": "-ubuntu-14.04",
-    "3.7.0": "-ubuntu-14.04",
-    "3.7.1": "-ubuntu-14.04",
-    "3.8.0": "-ubuntu-16.04",
-    "3.8.1": "-ubuntu-16.04",
-    "3.9.0": "-ubuntu-16.04",
-    "3.9.1": "-ubuntu-16.04",
-    "4.0.0": "-ubuntu-16.04",
-    "5.0.0": "-ubuntu16.04",
-    "5.0.1": "-ubuntu-16.04",
-    "5.0.2": "-ubuntu-16.04",
-    "6.0.0": "-ubuntu-16.04",
-    "6.0.1": "-ubuntu-16.04",
-    "7.0.0": "-ubuntu-16.04",
-    "7.0.1": "-ubuntu-18.04",
-    "7.1.0": "-ubuntu-14.04",
-    "8.0.0": "-ubuntu-18.04",
-    "9.0.0": "-ubuntu-18.04",
-    "9.0.1": "-ubuntu-16.04",
-    "10.0.0": "-ubuntu-18.04",
-    "10.0.1": "-ubuntu-16.04",
-    "11.0.0": "-ubuntu-20.04",
-    "11.0.1": "-ubuntu-16.04",
-    "11.1.0": "-ubuntu-16.04",
-    "12.0.0": "-ubuntu-20.04",
-    "12.0.1": "-ubuntu-16.04",
-    "13.0.0": "-ubuntu-20.04",
-    "13.0.1": "-ubuntu-18.04",
-    "14.0.0": "-ubuntu-18.04",
-    "15.0.5": "-ubuntu-18.04",
-    "15.0.6": "-ubuntu-18.04",
-    "16.0.0": "-ubuntu-18.04",
-    "16.0.2": "-ubuntu-22.04",
-    "16.0.3": "-ubuntu-22.04",
-    "16.0.4": "-ubuntu-22.04",
-    "17.0.2": "-ubuntu-22.04"
-};
-/** The latest supported LLVM version for the Linux (Ubuntu) platform. */ const MAX_UBUNTU = "16.0.0";
-/** Gets an LLVM download URL for the Linux (Ubuntu) platform. */ function getLinuxUrl(version, options) {
-    if (!options.forceVersion && LINUX_MISSING.has(version)) return null;
-    const rc = UBUNTU_RC.get(version);
-    if (rc) version = rc;
-    let ubuntu;
-    if (options.ubuntuVersion) ubuntu = `-ubuntu-${options.ubuntuVersion}`;
-    else if (options.forceVersion) ubuntu = UBUNTU[MAX_UBUNTU];
-    else ubuntu = UBUNTU[version];
-    if (!ubuntu) return null;
-    const prefix = "clang+llvm-";
-    const suffix = `-x86_64-linux-gnu${ubuntu}.tar.xz`;
-    if (options.downloadUrl) return getDownloadUrl(options.downloadUrl, version, prefix, suffix);
-    else if (compareVersions(version, "9.0.1") >= 0) return getGitHubUrl(version, prefix, suffix);
-    else return getReleaseUrl(version, prefix, suffix);
-}
-/** The LLVM versions that were never released for the Windows platform. */ const WIN32_MISSING = new Set([
-    "10.0.1"
-]);
-/** Gets an LLVM download URL for the Windows platform. */ function getWin32Url(version, options) {
-    if (!options.forceVersion && WIN32_MISSING.has(version)) return null;
-    const prefix = "LLVM-";
-    const suffix = compareVersions(version, "3.7.0") >= 0 ? "-win64.exe" : "-win32.exe";
-    if (options.downloadUrl) return getDownloadUrl(options.downloadUrl, version, prefix, suffix);
-    else if (compareVersions(version, "9.0.1") >= 0) return getGitHubUrl(version, prefix, suffix);
-    else return getReleaseUrl(version, prefix, suffix);
-}
-/** Gets an LLVM download URL. */ function getUrl(platform, version, options) {
-    switch(platform){
-        case "darwin":
-            return getDarwinUrl(version, options);
-        case "linux":
-            return getLinuxUrl(version, options);
-        case "win32":
-            return getWin32Url(version, options);
-        default:
-            return null;
+function getAsset(os, options) {
+    if (options.forceUrl) {
+        console.log("Using asset specified by `force-url` option.");
+        return {
+            specificVersion: options.version,
+            url: options.forceUrl
+        };
     }
-}
-function getSpecificVersionAndUrl(platform, options) {
-    if (options.forceVersion) return [
-        options.version,
-        getUrl(platform, options.version, options)
-    ];
-    if (!VERSIONS.has(options.version)) throw new Error(`Unsupported target! (platform='${platform}', version='${options.version}')`);
-    for (const specificVersion of getSpecificVersions(options.version)){
-        const url = getUrl(platform, specificVersion, options);
-        if (url) return [
-            specificVersion,
-            url
-        ];
-    }
-    throw new Error(`Unsupported target! (platform='${platform}', version='${options.version}')`);
+    const arch = options.arch ?? process.arch;
+    console.log(`Checking known assets (os=${os}, arch=${arch}, version=${options.version})...`);
+    const assets = ASSETS[os]?.[arch];
+    if (!assets) throw new Error(`Unsupported platform (os=${os}, arch=${arch})!`);
+    const specificVersions = getSpecificVersions(Object.keys(assets), options.version);
+    if (!specificVersions.length) throw new Error(`Unsupported version for platform (os=${os}, arch=${arch}, version=${options.version})!`);
+    const specificVersion = specificVersions[0];
+    const path = ASSETS[os][arch][specificVersion];
+    let url;
+    if (options.mirrorUrl) url = `${options.mirrorUrl}${path}`;
+    else url = `https://github.com/llvm/llvm-project/releases/download/llvmorg-${specificVersion}${path}`;
+    return {
+        specificVersion: specificVersion,
+        url: url
+    };
 }
 //================================================
 // Action
@@ -356,14 +125,14 @@ function getSpecificVersionAndUrl(platform, options) {
 const DEFAULT_NIX_DIRECTORY = "./llvm";
 const DEFAULT_WIN32_DIRECTORY = "C:/Program Files/LLVM";
 async function install(options) {
-    const platform = process.platform;
-    const [specificVersion, url] = getSpecificVersionAndUrl(platform, options);
+    const os = process.platform;
+    const { specificVersion, url } = getAsset(os, options);
     $iL6dd.setOutput("version", specificVersion);
     console.log(`Installing LLVM and Clang ${options.version} (${specificVersion})...`);
     console.log(`Downloading and extracting '${url}'...`);
     const archive = await $jttxK.downloadTool(url, "", options.auth);
     let exit;
-    if (platform === "win32") exit = await $kRojK.exec("7z", [
+    if (os === "win32") exit = await $kRojK.exec("7z", [
         "x",
         archive,
         `-o${options.directory}`,
@@ -409,7 +178,7 @@ async function main() {
         $iL6dd.setFailed(error.message);
     }
 }
-if (!module.parent) main();
+if (undefined === module) main();
 
 });
 parcelRequire.register("iL6dd", function(module, exports) {
@@ -7988,6 +7757,11 @@ module.exports.RetryHelper = $87651c4e72658245$var$RetryHelper;
 
 });
 
+
+parcelRequire.register("ldDhk", function(module, exports) {
+module.exports = JSON.parse('{"linux":{"arm64":{"18.1.2":"/clang%2Bllvm-18.1.2-aarch64-linux-gnu.tar.xz","18.1.1":"/clang%2Bllvm-18.1.1-aarch64-linux-gnu.tar.xz","18.1.0":"/clang%2Bllvm-18.1.0-aarch64-linux-gnu.tar.xz","17.0.6":"/clang%2Bllvm-17.0.6-aarch64-linux-gnu.tar.xz","17.0.5":"/clang%2Bllvm-17.0.5-aarch64-linux-gnu.tar.xz","17.0.4":"/clang%2Bllvm-17.0.4-aarch64-linux-gnu.tar.xz","17.0.3":"/clang%2Bllvm-17.0.3-aarch64-linux-gnu.tar.xz","17.0.2":"/clang%2Bllvm-17.0.2-aarch64-linux-gnu.tar.xz","17.0.1":"/clang%2Bllvm-17.0.1-aarch64-linux-gnu.tar.xz","16.0.6":"/clang%2Bllvm-16.0.6-aarch64-linux-gnu.tar.xz","16.0.5":"/clang%2Bllvm-16.0.5-aarch64-linux-gnu.tar.xz","16.0.4":"/clang%2Bllvm-16.0.4-aarch64-linux-gnu.tar.xz","16.0.3":"/clang%2Bllvm-16.0.3-aarch64-linux-gnu.tar.xz","16.0.2":"/clang%2Bllvm-16.0.2-aarch64-linux-gnu.tar.xz","16.0.1":"/clang%2Bllvm-16.0.1-aarch64-linux-gnu.tar.xz","16.0.0":"/clang%2Bllvm-16.0.0-aarch64-linux-gnu.tar.xz","15.0.6":"/clang%2Bllvm-15.0.6-aarch64-linux-gnu.tar.xz","15.0.3":"/clang%2Bllvm-15.0.3-aarch64-linux-gnu.tar.xz","15.0.2":"/clang%2Bllvm-15.0.2-aarch64-linux-gnu.tar.xz","15.0.1":"/clang%2Bllvm-15.0.1-aarch64-linux-gnu.tar.xz","15.0.0":"/clang%2Bllvm-15.0.0-aarch64-linux-gnu.tar.xz","14.0.6":"/clang%2Bllvm-14.0.6-aarch64-linux-gnu.tar.xz","14.0.5":"/clang%2Bllvm-14.0.5-aarch64-linux-gnu.tar.xz","14.0.4":"/clang%2Bllvm-14.0.4-aarch64-linux-gnu.tar.xz","14.0.3":"/clang%2Bllvm-14.0.3-aarch64-linux-gnu.tar.xz","14.0.2":"/clang%2Bllvm-14.0.2-aarch64-linux-gnu.tar.xz","14.0.1":"/clang%2Bllvm-14.0.1-aarch64-linux-gnu.tar.xz","14.0.0":"/clang%2Bllvm-14.0.0-aarch64-linux-gnu.tar.xz","13.0.1":"/clang%2Bllvm-13.0.1-aarch64-linux-gnu.tar.xz","13.0.0":"/clang%2Bllvm-13.0.0-aarch64-linux-gnu.tar.xz","12.0.1":"/clang%2Bllvm-12.0.1-aarch64-linux-gnu.tar.xz","12.0.0":"/clang%2Bllvm-12.0.0-aarch64-linux-gnu.tar.xz","11.1.0":"/clang%2Bllvm-11.1.0-aarch64-linux-gnu.tar.xz","11.0.1":"/clang%2Bllvm-11.0.1-aarch64-linux-gnu.tar.xz","11.0.0":"/clang%2Bllvm-11.0.0-aarch64-linux-gnu.tar.xz","10.0.1":"/clang%2Bllvm-10.0.1-aarch64-linux-gnu.tar.xz","10.0.0":"/clang%2Bllvm-10.0.0-aarch64-linux-gnu.tar.xz","9.0.1":"/clang%2Bllvm-9.0.1-aarch64-linux-gnu.tar.xz","8.0.1":"/clang%2Bllvm-8.0.1-aarch64-linux-gnu.tar.xz","7.1.0":"/clang%2Bllvm-7.1.0-aarch64-linux-gnu.tar.xz"},"x64":{"17.0.6":"/clang%2Bllvm-17.0.6-x86_64-linux-gnu-ubuntu-22.04.tar.xz","17.0.5":"/clang%2Bllvm-17.0.5-x86_64-linux-gnu-ubuntu-22.04.tar.xz","17.0.4":"/clang%2Bllvm-17.0.4-x86_64-linux-gnu-ubuntu-22.04.tar.xz","17.0.2":"/clang%2Bllvm-17.0.2-x86_64-linux-gnu-ubuntu-22.04.tar.xz","16.0.4":"/clang%2Bllvm-16.0.4-x86_64-linux-gnu-ubuntu-22.04.tar.xz","16.0.3":"/clang%2Bllvm-16.0.3-x86_64-linux-gnu-ubuntu-22.04.tar.xz","16.0.2":"/clang%2Bllvm-16.0.2-x86_64-linux-gnu-ubuntu-22.04.tar.xz","16.0.0":"/clang%2Bllvm-16.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz","15.0.6":"/clang%2Bllvm-15.0.6-x86_64-linux-gnu-ubuntu-18.04.tar.xz","15.0.5":"/clang%2Bllvm-15.0.5-x86_64-linux-gnu-ubuntu-18.04.tar.xz","14.0.0":"/clang%2Bllvm-14.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz","13.0.1":"/clang%2Bllvm-13.0.1-x86_64-linux-gnu-ubuntu-18.04.tar.xz","13.0.0":"/clang%2Bllvm-13.0.0-x86_64-linux-gnu-ubuntu-20.04.tar.xz","12.0.1":"/clang%2Bllvm-12.0.1-x86_64-linux-gnu-ubuntu-16.04.tar.xz","12.0.0":"/clang%2Bllvm-12.0.0-x86_64-linux-gnu-ubuntu-20.04.tar.xz","11.1.0":"/clang%2Bllvm-11.1.0-x86_64-linux-gnu-ubuntu-20.10.tar.xz","11.0.1":"/clang%2Bllvm-11.0.1-x86_64-linux-gnu-ubuntu-20.10.tar.xz","11.0.0":"/clang%2Bllvm-11.0.0-x86_64-linux-gnu-ubuntu-20.04.tar.xz","10.0.1":"/clang%2Bllvm-10.0.1-x86_64-linux-gnu-ubuntu-16.04.tar.xz","10.0.0":"/clang%2Bllvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz","9.0.1":"/clang%2Bllvm-9.0.1-x86_64-linux-gnu-ubuntu-16.04.tar.xz","8.0.1":"/clang%2Bllvm-8.0.1-x86_64-linux-gnu-ubuntu-14.04.tar.xz","7.1.0":"/clang%2Bllvm-7.1.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz"}},"win32":{"x64":{"18.1.2":"/LLVM-18.1.2-win64.exe","18.1.1":"/LLVM-18.1.1-win64.exe","18.1.0":"/LLVM-18.1.0-win64.exe","17.0.6":"/LLVM-17.0.6-win64.exe","17.0.5":"/LLVM-17.0.5-win64.exe","17.0.4":"/LLVM-17.0.4-win64.exe","17.0.3":"/LLVM-17.0.3-win64.exe","17.0.2":"/LLVM-17.0.2-win64.exe","17.0.1":"/LLVM-17.0.1-win64.exe","16.0.6":"/LLVM-16.0.6-win64.exe","16.0.5":"/LLVM-16.0.5-win64.exe","16.0.4":"/LLVM-16.0.4-win64.exe","16.0.3":"/LLVM-16.0.3-win64.exe","16.0.2":"/LLVM-16.0.2-win64.exe","16.0.1":"/LLVM-16.0.1-win64.exe","16.0.0":"/LLVM-16.0.0-win64.exe","15.0.7":"/LLVM-15.0.7-win64.exe","15.0.6":"/LLVM-15.0.6-win64.exe","15.0.5":"/LLVM-15.0.5-win64.exe","15.0.4":"/LLVM-15.0.4-win64.exe","15.0.3":"/LLVM-15.0.3-win64.exe","15.0.2":"/LLVM-15.0.2-win64.exe","15.0.1":"/LLVM-15.0.1-win64.exe","15.0.0":"/LLVM-15.0.0-win64.exe","14.0.6":"/LLVM-14.0.6-win64.exe","14.0.5":"/LLVM-14.0.5-win64.exe","14.0.4":"/LLVM-14.0.4-win64.exe","14.0.3":"/LLVM-14.0.3-win64.exe","14.0.2":"/LLVM-14.0.2-win64.exe","14.0.1":"/LLVM-14.0.1-win64.exe","14.0.0":"/LLVM-14.0.0-win64.exe","13.0.1":"/LLVM-13.0.1-win64.exe","13.0.0":"/LLVM-13.0.0-win64.exe","12.0.1":"/LLVM-12.0.1-win64.exe","12.0.0":"/LLVM-12.0.0-win64.exe","11.1.0":"/LLVM-11.1.0-win64.exe","11.0.1":"/LLVM-11.0.1-win64.exe","11.0.0":"/LLVM-11.0.0-win64.exe","10.0.0":"/LLVM-10.0.0-win64.exe","9.0.1":"/LLVM-9.0.1-win64.exe","8.0.1":"/LLVM-8.0.1-win64.exe","7.1.0":"/LLVM-7.1.0-win64.exe"},"arm64":{"18.1.2":"/LLVM-18.1.2-woa64.exe","18.1.1":"/LLVM-18.1.1-woa64.exe","18.1.0":"/LLVM-18.1.0-woa64.exe","17.0.6":"/LLVM-17.0.6-woa64.exe","17.0.5":"/LLVM-17.0.5-woa64.exe","17.0.4":"/LLVM-17.0.4-woa64.exe","17.0.3":"/LLVM-17.0.3-woa64.exe","17.0.2":"/LLVM-17.0.2-woa64.exe","17.0.1":"/LLVM-17.0.1-woa64.exe","16.0.6":"/LLVM-16.0.6-woa64.exe","16.0.5":"/LLVM-16.0.5-woa64.exe","16.0.4":"/LLVM-16.0.4-woa64.exe","16.0.3":"/LLVM-16.0.3-woa64.exe","16.0.2":"/LLVM-16.0.2-woa64.exe","16.0.1":"/LLVM-16.0.1-woa64.exe","16.0.0":"/LLVM-16.0.0-woa64.exe","15.0.6":"/LLVM-15.0.6-woa64.exe","15.0.3":"/LLVM-15.0.3-woa64.exe","15.0.2":"/LLVM-15.0.2-woa64.exe","15.0.1":"/LLVM-15.0.1-woa64.exe","15.0.0":"/LLVM-15.0.0-woa64.exe","12.0.0":"/LLVM-12.0.0-woa64.exe"}},"darwin":{"arm64":{"17.0.6":"/clang%2Bllvm-17.0.6-arm64-apple-darwin22.0.tar.xz","17.0.5":"/clang%2Bllvm-17.0.5-arm64-apple-darwin22.0.tar.xz","17.0.4":"/clang%2Bllvm-17.0.4-arm64-apple-darwin22.0.tar.xz","17.0.3":"/clang%2Bllvm-17.0.3-arm64-apple-darwin22.0.tar.xz","17.0.2":"/clang%2Bllvm-17.0.2-arm64-apple-darwin22.0.tar.xz","17.0.1":"/clang%2Bllvm-17.0.1-arm64-apple-darwin22.0.tar.xz","16.0.5":"/clang%2Bllvm-16.0.5-arm64-apple-darwin22.0.tar.xz","16.0.4":"/clang%2Bllvm-16.0.4-arm64-apple-darwin22.0.tar.xz","16.0.3":"/clang%2Bllvm-16.0.3-arm64-apple-darwin22.0.tar.xz","16.0.2":"/clang%2Bllvm-16.0.2-arm64-apple-darwin22.0.tar.xz","16.0.1":"/clang%2Bllvm-16.0.1-arm64-apple-darwin22.0.tar.xz","16.0.0":"/clang%2Bllvm-16.0.0-arm64-apple-darwin22.0.tar.xz","15.0.7":"/clang%2Bllvm-15.0.7-arm64-apple-darwin22.0.tar.xz","15.0.6":"/clang%2Bllvm-15.0.6-arm64-apple-darwin21.0.tar.xz","15.0.5":"/clang%2Bllvm-15.0.5-arm64-apple-darwin21.0.tar.xz","15.0.4":"/clang%2Bllvm-15.0.4-arm64-apple-darwin21.0.tar.xz","15.0.3":"/clang%2Bllvm-15.0.3-arm64-apple-darwin21.0.tar.xz","15.0.2":"/clang%2Bllvm-15.0.2-arm64-apple-darwin21.0.tar.xz","15.0.1":"/clang%2Bllvm-15.0.1-arm64-apple-darwin21.0.tar.xz","15.0.0":"/clang%2Bllvm-15.0.0-arm64-apple-darwin21.0.tar.xz","14.0.6":"/clang%2Bllvm-14.0.6-arm64-apple-darwin22.3.0.tar.xz"},"x64":{"15.0.7":"/clang%2Bllvm-15.0.7-x86_64-apple-darwin21.0.tar.xz","15.0.4":"/clang%2Bllvm-15.0.4-x86_64-apple-darwin.tar.xz","15.0.3":"/clang%2Bllvm-15.0.3-x86_64-apple-darwin.tar.xz","15.0.2":"/clang%2Bllvm-15.0.2-x86_64-apple-darwin.tar.xz","15.0.1":"/clang%2Bllvm-15.0.1-x86_64-apple-darwin.tar.xz","15.0.0":"/clang%2Bllvm-15.0.0-x86_64-apple-darwin.tar.xz","14.0.6":"/clang%2Bllvm-14.0.6-x86_64-apple-darwin.tar.xz","14.0.5":"/clang%2Bllvm-14.0.5-x86_64-apple-darwin.tar.xz","14.0.4":"/clang%2Bllvm-14.0.4-x86_64-apple-darwin.tar.xz","14.0.3":"/clang%2Bllvm-14.0.3-x86_64-apple-darwin.tar.xz","14.0.2":"/clang%2Bllvm-14.0.2-x86_64-apple-darwin.tar.xz","14.0.1":"/clang%2Bllvm-14.0.1-x86_64-apple-darwin.tar.xz","14.0.0":"/clang%2Bllvm-14.0.0-x86_64-apple-darwin.tar.xz","13.0.1":"/clang%2Bllvm-13.0.1-x86_64-apple-darwin.tar.xz","13.0.0":"/clang%2Bllvm-13.0.0-x86_64-apple-darwin.tar.xz","12.0.0":"/clang%2Bllvm-12.0.0-x86_64-apple-darwin.tar.xz","11.0.0":"/clang%2Bllvm-11.0.0-x86_64-apple-darwin.tar.xz","10.0.1":"/clang%2Bllvm-10.0.1-x86_64-apple-darwin.tar.xz","10.0.0":"/clang%2Bllvm-10.0.0-x86_64-apple-darwin.tar.xz","9.0.1":"/clang%2Bllvm-9.0.1-x86_64-apple-darwin.tar.xz"}}}');
+
+});
 
 
 

@@ -9,11 +9,11 @@ inputs:
   version:
     description: "The version of LLVM and Clang binaries to install."
     required: true
-  force-version:
-    description: "Whether to accept unsupported LLVM and Clang versions."
+  arch:
+    description: "The archtecture (either `x64` or `arm64`) to install LLVM and Clang binaries for."
     required: false
-  ubuntu-version:
-    description: "The version override of Ubuntu to use for the Linux platform."
+  force-url:
+    description: "The full download URL to use for LLVM and Clang binaries."
     required: false
   directory:
     description: "The directory to install LLVM and Clang binaries to."
@@ -21,8 +21,8 @@ inputs:
   cached:
     description: "Whether the LLVM and Clang binaries were cached."
     required: false
-  download-url:
-    description: "The URL to download LLVM and Clang binaries from."
+  mirror-url:
+    description: "The base URL to download LLVM and Clang binaries from instead of using GitHub."
     required: false
   auth:
     description: "The Authorization header to use when downloading LLVM and Clang binaries."
