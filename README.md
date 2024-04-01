@@ -4,7 +4,7 @@
 
 A GitHub Action for downloading and installing LLVM and Clang binaries.
 
-The binaries will be added to the relevant environment variables for the platform after installation (e.g., `PATH`, `LD_LIBRARY_PATH`, and/or `DYLD_LIBRARY_PATH`). Caching is supported using the `actions/cache@v3` action as shown in an example below. The directory the binaries are installed to will be put in the `LLVM_PATH` environment variable.
+Supports LLVM and Clang 7.1.0 and later. The binaries will be added to the relevant environment variables for the platform after installation (e.g., `PATH`, `LD_LIBRARY_PATH`, and/or `DYLD_LIBRARY_PATH`).
 
 Released under the Apache License 2.0.
 
@@ -44,29 +44,27 @@ If your build system requires a library from the installed LLVM and Clang binari
 
 **Required** The version of LLVM and Clang binaries to install.
 
-This can be a specific LLVM and Clang version such as `3.6.2` or a minimum version like `3.6` or just `3`. When specifying a minimum version, the highest compatible version supported by the platform will be installed (e.g., `3.6.2` for `3.6` or `3.9.1` for `3`).
+This can be a specific LLVM and Clang version such as `10.1.2` or a minimum version like `10.1` or just `10`. When specifying a minimum version, the highest compatible version supported by the platform will be installed (e.g., `10.1.2` for `10.1` or `10.2.0` for `10`).
 
-Note that when using minimum versions like `3` the specific version installed by this action may not be the same on every operating system. This is because some versions of the LLVM and Clang binaries do not exist for some operating systems.
+Note that when using minimum versions like `10` the specific version installed by this action may not be the same on every operating system and architecture (e.g., x86-86 vs ARM64). This is because some versions of the LLVM and Clang binaries do not exist for some operating systems. You can view [this file](assets.json) to see the currently supported LLVM and Clang versions for each operating system and architecture pairing.
+
+### `arch`
+
+The archtecture (either `x64` or `arm64`) to install LLVM and Clang binaries for.
+
+By default, the architecture of the machine this action is running on will be used.
+
+### `force-url`
+
+The full download URL to use for LLVM and Clang binaries.
+
+If this input is used, the `version`, `arch`, and `mirror-url` inputs will be ignored (except in that the value of the `version` input will be used verbatim as the value for the `version` output). Instead, the URL supplied for this input is assumed to be a full URL to download LLVM and Clang binaries. This input can be used if this action lacks support for a recent LLVM and Clang version or if you have LLVM and Clang binaries mirror in a way that can't be handled by the `mirror-url` input.
 
 ### `directory`
 
 The directory to install LLVM and Clang binaries to. If not provided, `C:\Program Files\LLVM` is used as the default value on Windows and `./llvm` is used on other operating systems.
 
-This action puts the value of this option into the `LLVM_PATH` environment variable which allows for easy use of the directory containing the LLVM and Clang binaries in subsequent jobs (e.g., `${{ env.LLVM_PATH }}`).
-
-### `force-version`
-
-Whether to accept unsupported LLVM and Clang versions.
-
-This action will by default reject unsupported LLVM and Clang versions. For example, if you want to download LLVM and Clang `69.0.0` but that version is not yet supported by this action, you can set this option to `true` to allow usage of this action.
-
-**Important:** You may need to set `ubuntu-version` as well for this to work, this action will use the Ubuntu version for the most recent supported version which may not work for the version you are requesting. Also, there are no guarantees that this will work at all.
-
-### `ubuntu-version`
-
-The version override of Ubuntu to use for the Linux platform.
-
-For a given LLVM and Clang version, there are sometimes multiple binaries available targeting different versions of Ubuntu (e.g., `16.04` and `18.04`). By default this action will download the binaries for the most recent [LTS version](https://ubuntu.com/blog/what-is-an-ubuntu-lts-release) binaries are available for. This option can be used to override this default and pick a different version.
+This action puts the value of this input into the `LLVM_PATH` environment variable which allows for easy use of the directory containing the LLVM and Clang binaries in subsequent jobs (e.g., `${{ env.LLVM_PATH }}`).
 
 ### `cached`
 
@@ -74,9 +72,9 @@ Whether the LLVM and Clang binaries were cached.
 
 **Note:** Caching is not currently recommended, it is usually slower than just directly downloading the LLVM and Clang binaries.
 
-### `download-url`
+### `mirror-url`
 
-The URL to download LLVM and Clang binaries from.
+The base URL to download LLVM and Clang binaries from instead of using GitHub.
 
 This can be used if you want to download the LLVM and Clang binaries from a mirror of the GitHub releases for the `llvm/llvm-project` repository provided by a service like Artifactory.
 
@@ -84,7 +82,7 @@ This can be used if you want to download the LLVM and Clang binaries from a mirr
 
 The `Authorization` header to use when downloading LLVM and Clang binaries.
 
-This is unnecessary unless you are providing a custom download URL using the `download-url` input and you need to provide an `Authorization` header when downloading the LLVM and Clang binaries from the service targeted by that custom download URL.
+This is unnecessary unless you are providing the `mirror-url` input and you need to provide an `Authorization` header when downloading the LLVM and Clang binaries from the service targeted by that custom download URL.
 
 ### `env`
 
@@ -96,4 +94,4 @@ Whether to set `CC` and `CXX` environment variables to Clang paths.
 
 The full version of LLVM and Clang binaries installed.
 
-This will only differ from the value of the `version` option when specifying a minimum version like `3.6` or `3`.
+This will only differ from the value of the `version` input when specifying a minimum version like `10.1` or `10`.
