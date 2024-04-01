@@ -18,7 +18,7 @@ export interface Options {
   env: boolean;
 }
 
-function getOptions(): Options {
+export function getOptions(): Options {
   return {
     version: core.getInput("version"),
     arch: core.getInput("arch"),
@@ -62,7 +62,7 @@ export function getAsset(os: string, options: Options): Asset {
     return { specificVersion: options.version, url: options.forceUrl };
   }
 
-  const arch = options.arch ?? process.arch;
+  const arch = (options.arch ?? process.arch) || "x64";
   console.log(`Checking known assets (os=${os}, arch=${arch}, version=${options.version})...`);
 
   const assets = ASSETS[os]?.[arch];
@@ -120,7 +120,7 @@ async function install(options: Options): Promise<void> {
   core.info(`Install location: ${options.directory}`);
 }
 
-async function run(options: Options): Promise<void> {
+export async function run(options: Options): Promise<void> {
   if (!options.directory) {
     options.directory = process.platform === "win32" ? DEFAULT_WIN32_DIRECTORY : DEFAULT_NIX_DIRECTORY;
   }
@@ -149,17 +149,4 @@ async function run(options: Options): Promise<void> {
     core.exportVariable("CC", path.join(options.directory, "bin", "clang"));
     core.exportVariable("CXX", path.join(options.directory, "bin", "clang++"));
   }
-}
-
-async function main() {
-  try {
-    await run(getOptions());
-  } catch (error: any) {
-    console.error(error.stack);
-    core.setFailed(error.message);
-  }
-}
-
-if (require.main === module) {
-  main();
 }
