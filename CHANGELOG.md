@@ -1,4 +1,4 @@
-## [2.0.0] - UNRELEASED
+## [2.0.0] - 2024-03-31
 
 ### Migrating from v1
 
