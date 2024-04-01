@@ -12,7 +12,7 @@ Released under the Apache License 2.0.
 
 ```yml
 - name: Install LLVM and Clang
-  uses: KyleMayes/install-llvm-action@v1
+  uses: KyleMayes/install-llvm-action@v2
   with:
     version: "10.0"
 ```
@@ -21,7 +21,7 @@ Released under the Apache License 2.0.
 
 ```yml
 - name: Install LLVM and Clang
-  uses: KyleMayes/install-llvm-action@v1
+  uses: KyleMayes/install-llvm-action@v2
   with:
     version: "10.0"
     directory: ${{ runner.temp }}/llvm
