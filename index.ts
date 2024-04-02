@@ -42,7 +42,7 @@ export function getOptions(): Options {
  */
 function getSpecificVersions(specificVersions: string[], version: string): string[] {
   return Array.from(specificVersions)
-    .filter(v => /^\d+\.\d+\.\d+$/.test(v) && v.startsWith(`${version}.`))
+    .filter(v => /^\d+\.\d+\.\d+$/.test(v) && (v.startsWith(`${version}.`) || v === version))
     .sort()
     .reverse();
 }

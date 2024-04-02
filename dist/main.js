@@ -5484,6 +5484,7 @@ var $ccf585a66b281eee$export$2e2bcd8739ae039 = $ccf585a66b281eee$var$v4;
 
 
 
+
 function $2c179eb4735c01c1$var$issueFileCommand(command, message) {
     const filePath = process.env[`GITHUB_${command}`];
     if (!filePath) throw new Error(`Unable to find environment variable for file command ${command}`);
@@ -7597,7 +7598,7 @@ function $73b874f14e970995$export$d2312e68e1f5ad00() {
  * supplied (specific or minimum) LLVM version in descending order of release
  * (e.g., `5.0.2`, `5.0.1`, and `5.0.0` for `5`).
  */ function $73b874f14e970995$var$getSpecificVersions(specificVersions, version) {
-    return Array.from(specificVersions).filter((v)=>/^\d+\.\d+\.\d+$/.test(v) && v.startsWith(`${version}.`)).sort().reverse();
+    return Array.from(specificVersions).filter((v)=>/^\d+\.\d+\.\d+$/.test(v) && (v.startsWith(`${version}.`) || v === version)).sort().reverse();
 }
 function $73b874f14e970995$export$da446a5ee2572b7(os, options) {
     if (options.forceUrl) {
