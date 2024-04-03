@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://json-schema.org/draft-07/schema#
+
+name: Debug
+
+on:
+  workflow_dispatch:
+    inputs:
+      runs-on:
+        type: string
+        required: true
+
+jobs:
+  test:
+    runs-on: ${{ inputs.runs-on }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install LLVM and Clang
+        uses: ./
+        with:
+          version: 17
+          env: true
+
+      - name: Debug
+        uses: mxschmitt/action-tmate@v3
