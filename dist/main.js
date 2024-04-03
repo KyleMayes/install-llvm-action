@@ -5484,7 +5484,6 @@ var $ccf585a66b281eee$export$2e2bcd8739ae039 = $ccf585a66b281eee$var$v4;
 
 
 
-
 function $2c179eb4735c01c1$var$issueFileCommand(command, message) {
     const filePath = process.env[`GITHUB_${command}`];
     if (!filePath) throw new Error(`Unable to find environment variable for file command ${command}`);
@@ -7601,6 +7600,11 @@ function $73b874f14e970995$export$d2312e68e1f5ad00() {
     return Array.from(specificVersions).filter((v)=>/^\d+\.\d+\.\d+$/.test(v) && (v.startsWith(`${version}.`) || v === version)).sort().reverse();
 }
 function $73b874f14e970995$export$da446a5ee2572b7(os, options) {
+    const info = {
+        os: process.platform,
+        arch: process.arch
+    };
+    console.log(`NodeJS process info = ${JSON.stringify(info)}`);
     if (options.forceUrl) {
         console.log("Using asset specified by `force-url` option.");
         return {
@@ -7685,7 +7689,6 @@ async function $933db609b41224a7$var$main() {
         $da816f606135dc7c$exports.setFailed(error.message);
     }
 }
-console.log("hello");
 $933db609b41224a7$var$main();
 
 

@@ -57,6 +57,9 @@ export interface Asset {
 }
 
 export function getAsset(os: string, options: Options): Asset {
+  const info = { os: process.platform, arch: process.arch };
+  console.log(`NodeJS process info = ${JSON.stringify(info)}`);
+
   if (options.forceUrl) {
     console.log("Using asset specified by `force-url` option.");
     return { specificVersion: options.version, url: options.forceUrl };
