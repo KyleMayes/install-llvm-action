@@ -1,3 +1,9 @@
+## [2.0.1] - 2024-02-04
+
+### Fixes
+- Fixed exact LLVM and Clang versions (e.g., `17.0.6`) causing the action to fail
+- Fixed LLVM and Clang executables failing to run on ARM64 macOS runners
+
 ## [2.0.0] - 2024-03-31
 
 ### Migrating from v1
