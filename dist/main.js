@@ -7577,16 +7577,26 @@ $f72947bf3462b3a0$exports = JSON.parse('{"linux":{"arm64":{"18.1.2":"/clang%2Bll
 
 
 const $73b874f14e970995$var$ASSETS = $f72947bf3462b3a0$exports;
+function $73b874f14e970995$var$getRequiredInput(name) {
+    const value = $da816f606135dc7c$exports.getInput(name).trim();
+    if (value !== "") return value;
+    else throw new Error(`'${name}' input must be provided as a non-empty string`);
+}
+function $73b874f14e970995$var$getOptionalInput(name) {
+    const value = $da816f606135dc7c$exports.getInput(name).trim();
+    if (value !== "") return value;
+    else return null;
+}
 function $73b874f14e970995$export$d2312e68e1f5ad00() {
     return {
-        version: $da816f606135dc7c$exports.getInput("version"),
-        arch: $da816f606135dc7c$exports.getInput("arch"),
-        forceUrl: $da816f606135dc7c$exports.getInput("force-url"),
-        directory: $da816f606135dc7c$exports.getInput("directory"),
-        cached: ($da816f606135dc7c$exports.getInput("cached") ?? "").toLowerCase() === "true",
-        mirrorUrl: $da816f606135dc7c$exports.getInput("mirror-url"),
-        auth: $da816f606135dc7c$exports.getInput("auth"),
-        env: ($da816f606135dc7c$exports.getInput("env") ?? "").toLowerCase() === "true"
+        version: $73b874f14e970995$var$getRequiredInput("version"),
+        arch: $73b874f14e970995$var$getOptionalInput("arch"),
+        forceUrl: $73b874f14e970995$var$getOptionalInput("force-url"),
+        directory: $73b874f14e970995$var$getOptionalInput("directory"),
+        cached: $73b874f14e970995$var$getOptionalInput("cached")?.toLowerCase() === "true",
+        mirrorUrl: $73b874f14e970995$var$getOptionalInput("mirror-url"),
+        auth: $73b874f14e970995$var$getOptionalInput("auth"),
+        env: $73b874f14e970995$var$getOptionalInput("env")?.toLowerCase() === "true"
     };
 }
 //================================================
@@ -7639,7 +7649,7 @@ async function $73b874f14e970995$var$install(options) {
     $da816f606135dc7c$exports.setOutput("version", specificVersion);
     console.log(`Installing LLVM and Clang ${options.version} (${specificVersion})...`);
     console.log(`Downloading and extracting '${url}'...`);
-    const archive = await $e2d7a47000ccff78$exports.downloadTool(url, "", options.auth);
+    const archive = await $e2d7a47000ccff78$exports.downloadTool(url, "", options.auth ?? undefined);
     let exit;
     if (os === "win32") exit = await $f2fb9ed99c4d106b$exports.exec("7z", [
         "x",
@@ -7648,12 +7658,13 @@ async function $73b874f14e970995$var$install(options) {
         "-y"
     ]);
     else {
-        await $58ae6a13f2ee10a4$exports.mkdirP(options.directory);
+        const directory = options.directory ?? "";
+        await $58ae6a13f2ee10a4$exports.mkdirP(directory);
         exit = await $f2fb9ed99c4d106b$exports.exec("tar", [
             "xf",
             archive,
             "-C",
-            options.directory,
+            directory,
             "--strip-components=1"
         ]);
     }

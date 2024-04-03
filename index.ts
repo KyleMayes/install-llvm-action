@@ -9,25 +9,43 @@ const ASSETS = ASSETS_JSON as Record<string, Record<string, Record<string, strin
 
 export interface Options {
   version: string;
-  arch?: string;
-  forceUrl?: string;
-  directory: string;
+  arch: string | null;
+  forceUrl: string | null;
+  directory: string | null;
   cached: boolean;
-  mirrorUrl?: string;
-  auth?: string;
+  mirrorUrl: string | null;
+  auth: string | null;
   env: boolean;
+}
+
+function getRequiredInput(name: string): string {
+  const value = core.getInput(name).trim();
+  if (value !== "") {
+    return value;
+  } else {
+    throw new Error(`'${name}' input must be provided as a non-empty string`);
+  }
+}
+
+function getOptionalInput(name: string): string | null {
+  const value = core.getInput(name).trim();
+  if (value !== "") {
+    return value;
+  } else {
+    return null;
+  }
 }
 
 export function getOptions(): Options {
   return {
-    version: core.getInput("version"),
-    arch: core.getInput("arch"),
-    forceUrl: core.getInput("force-url"),
-    directory: core.getInput("directory"),
-    cached: (core.getInput("cached") ?? "").toLowerCase() === "true",
-    mirrorUrl: core.getInput("mirror-url"),
-    auth: core.getInput("auth"),
-    env: (core.getInput("env") ?? "").toLowerCase() === "true",
+    version: getRequiredInput("version"),
+    arch: getOptionalInput("arch"),
+    forceUrl: getOptionalInput("force-url"),
+    directory: getOptionalInput("directory"),
+    cached: getOptionalInput("cached")?.toLowerCase() === "true",
+    mirrorUrl: getOptionalInput("mirror-url"),
+    auth: getOptionalInput("auth"),
+    env: getOptionalInput("env")?.toLowerCase() === "true",
   };
 }
 
@@ -105,14 +123,15 @@ async function install(options: Options): Promise<void> {
 
   console.log(`Installing LLVM and Clang ${options.version} (${specificVersion})...`);
   console.log(`Downloading and extracting '${url}'...`);
-  const archive = await tc.downloadTool(url, "", options.auth);
+  const archive = await tc.downloadTool(url, "", options.auth ?? undefined);
 
   let exit;
   if (os === "win32") {
     exit = await exec.exec("7z", ["x", archive, `-o${options.directory}`, "-y"]);
   } else {
-    await io.mkdirP(options.directory);
-    exit = await exec.exec("tar", ["xf", archive, "-C", options.directory, "--strip-components=1"]);
+    const directory = options.directory ?? "";
+    await io.mkdirP(directory);
+    exit = await exec.exec("tar", ["xf", archive, "-C", directory, "--strip-components=1"]);
   }
 
   if (exit !== 0) {
