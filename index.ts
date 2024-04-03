@@ -160,12 +160,20 @@ export async function run(options: Options): Promise<void> {
 
   core.addPath(bin);
 
-  const ld = process.env.LD_LIBRARY_PATH ?? "";
-  const dyld = process.env.DYLD_LIBRARY_PATH ?? "";
-
   core.exportVariable("LLVM_PATH", options.directory);
+
+  const ld = process.env.LD_LIBRARY_PATH ?? "";
   core.exportVariable("LD_LIBRARY_PATH", `${lib}${path.delimiter}${ld}`);
-  core.exportVariable("DYLD_LIBRARY_PATH", `${lib}${path.delimiter}${dyld}`);
+
+  // Ensure system libraries are first on ARM64 macOS to avoid issues with Apple's libc++ being weird.
+  // https://discourse.llvm.org/t/apples-libc-now-provides-std-type-descriptor-t-functionality-not-found-in-upstream-libc/73881/5
+  const dyld = process.env.DYLD_LIBRARY_PATH;
+  let dyldPrefix = "";
+  if (process.platform === "darwin" && process.arch === "arm64") {
+    dyldPrefix = `/usr/lib${path.delimiter}`;
+  }
+
+  core.exportVariable("DYLD_LIBRARY_PATH", `${dyldPrefix}${lib}${path.delimiter}${dyld}`);
 
   if (options.env) {
     core.exportVariable("CC", path.join(options.directory, "bin", "clang"));

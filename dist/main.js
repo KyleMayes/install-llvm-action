@@ -7680,11 +7680,15 @@ async function $73b874f14e970995$export$889ea624f2cb2c57(options) {
     const bin = $bknAJ$path.join(options.directory, "bin");
     const lib = $bknAJ$path.join(options.directory, "lib");
     $da816f606135dc7c$exports.addPath(bin);
-    const ld = process.env.LD_LIBRARY_PATH ?? "";
-    const dyld = process.env.DYLD_LIBRARY_PATH ?? "";
     $da816f606135dc7c$exports.exportVariable("LLVM_PATH", options.directory);
+    const ld = process.env.LD_LIBRARY_PATH ?? "";
     $da816f606135dc7c$exports.exportVariable("LD_LIBRARY_PATH", `${lib}${$bknAJ$path.delimiter}${ld}`);
-    $da816f606135dc7c$exports.exportVariable("DYLD_LIBRARY_PATH", `${lib}${$bknAJ$path.delimiter}${dyld}`);
+    // Ensure system libraries are first on ARM64 macOS to avoid issues with Apple's libc++ being weird.
+    // https://discourse.llvm.org/t/apples-libc-now-provides-std-type-descriptor-t-functionality-not-found-in-upstream-libc/73881/5
+    const dyld = process.env.DYLD_LIBRARY_PATH;
+    let dyldPrefix = "";
+    if (process.platform === "darwin" && process.arch === "arm64") dyldPrefix = `/usr/lib${$bknAJ$path.delimiter}`;
+    $da816f606135dc7c$exports.exportVariable("DYLD_LIBRARY_PATH", `${dyldPrefix}${lib}${$bknAJ$path.delimiter}${dyld}`);
     if (options.env) {
         $da816f606135dc7c$exports.exportVariable("CC", $bknAJ$path.join(options.directory, "bin", "clang"));
         $da816f606135dc7c$exports.exportVariable("CXX", $bknAJ$path.join(options.directory, "bin", "clang++"));
