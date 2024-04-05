@@ -8,6 +8,8 @@ Supports LLVM and Clang 7.1.0 and later. The binaries will be added to the relev
 
 Released under the Apache License 2.0.
 
+> **Note:** As mentioned in the notes for [recent `llvm/llvm-project` releases](https://github.com/llvm/llvm-project/releases), LLVM and Clang binaries are provided by volunteers and there is no guarantee of the availability of pre-built binaries for every platform and for every LLVM and Clang release. The LLVM and Clang versions currently supported by this action can be found in the [`assets.json`](assets.json) file. Note that availability of pre-built binaries can also differ depending on the targeted operating system and processor architecture (e.g., x86-64 vs ARM64).
+
 ## Example Usage
 
 ```yml
