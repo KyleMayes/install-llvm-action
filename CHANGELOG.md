@@ -1,4 +1,4 @@
-## [2.0.1] - 2024-02-04
+## [2.0.1] - 2024-04-02
 
 ### Fixes
 - Fixed exact LLVM and Clang versions (e.g., `17.0.6`) causing the action to fail
