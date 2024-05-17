@@ -32,7 +32,7 @@ jobs:
 
       - name: Arch (Windows)
         if: matrix.os == 'windows-latest'
-        run: echo %PROCESSOR_ARCHITECTURE%
+        run: printenv PROCESSOR_ARCHITECTURE
 
       - name: Install LLVM and Clang
         uses: ./
