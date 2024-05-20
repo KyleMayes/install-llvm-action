@@ -1,3 +1,7 @@
+## [2.0.3] - 2024-04-09
+
+- Added support for LLVM and Clang 18.1.4-6 (for platforms with binaries available)
+
 ## [2.0.2] - 2024-04-09
 
 - Added support for LLVM and Clang 18.1.3 (for platforms with binaries available)
