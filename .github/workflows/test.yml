@@ -19,6 +19,8 @@ jobs:
           - windows-latest
         version:
           - 17
+          - 17.0
+          - 17.0.2
 
     runs-on: "${{ matrix.os }}"
 
