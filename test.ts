@@ -39,8 +39,12 @@ Expected at least two arguments:
 
     const options: Options = {
       version: process.argv[start + 2],
+      arch: null,
+      forceUrl: null,
       directory: "",
       cached: false,
+      mirrorUrl: null,
+      auth: null,
       env: false,
     };
 
