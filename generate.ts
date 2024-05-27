@@ -1,4 +1,5 @@
 import * as _ from "lodash";
+import stringify, { Comparator } from "json-stable-stringify";
 import { Octokit } from "@octokit/rest";
 import { Endpoints } from "@octokit/types";
 import { writeFileSync } from "fs";
@@ -20,7 +21,7 @@ type Version = string;
 
 const VERSION_PATTERNS: RegExp[] = [/^llvmorg-(?<version>\d+\.\d+\.\d+)$/];
 
-function extractVersion(release: Release): Version | undefined {
+function extractVersionNumber(release: Release): Version | undefined {
   return _.chain(VERSION_PATTERNS)
     .map(pattern => pattern.exec(release.tag_name)?.groups?.version)
     .find(version => !!version)
@@ -48,7 +49,7 @@ const ASSET_PATTERNS: [Asset["os"], Asset["arch"], RegExp][] = [
 ];
 
 function extractAssets(release: Release): Asset[] {
-  const version = extractVersion(release);
+  const version = extractVersionNumber(release);
   if (!version) {
     return [];
   }
@@ -69,6 +70,16 @@ function extractAssets(release: Release): Asset[] {
 // Generate
 //================================================
 
+function parseVersionNumber(string: string): number | null {
+  const match = /(\d+)\.(\d+)\.(\d+)/.exec(string);
+  if (match) {
+    const parts = match.slice(1, 4).map(p => Number.parseInt(p));
+    return parts[0] * 100_000_000 + parts[1] * 100_000 + parts[2];
+  } else {
+    return null;
+  }
+}
+
 async function generate() {
   const assets = (
     await github.paginate("GET /repos/{owner}/{repo}/releases", {
@@ -87,7 +98,17 @@ async function generate() {
     );
   }
 
-  const json = JSON.stringify(output, null, "  ");
+  const comparator: Comparator = (a, b) => {
+    const versionA = parseVersionNumber(a.key);
+    const versionB = parseVersionNumber(b.key);
+    if (versionA && versionB) {
+      return versionA - versionB;
+    } else {
+      return a.key.localeCompare(b.key);
+    }
+  };
+
+  const json = stringify(output, { space: "  ", cmp: comparator });
   writeFileSync(resolve(__dirname, "assets.json"), json);
 }
 

@@ -19,8 +19,10 @@
   },
   "devDependencies": {
     "@octokit/rest": "^20",
+    "@types/json-stable-stringify": "^1",
     "@types/lodash": "^4",
     "@types/node": "~20",
+    "json-stable-stringify": "^1",
     "lodash": "^4",
     "parcel": "^2",
     "ts-node": "^10",
