@@ -2,10 +2,11 @@ import * as core from "@actions/core";
 import * as exec from "@actions/exec";
 import * as io from "@actions/io";
 import * as tc from "@actions/tool-cache";
+import * as fs from "fs";
 import * as path from "path";
 
-import * as ASSETS_JSON from "./assets.json";
-const ASSETS = ASSETS_JSON as Record<string, Record<string, Record<string, string>>>;
+const ASSETS_JSON = fs.readFileSync(path.resolve(__dirname, "assets.json")).toString("utf-8");
+const ASSETS: Record<string, Record<string, Record<string, string>>> = JSON.parse(ASSETS_JSON);
 
 export interface Options {
   version: string;
