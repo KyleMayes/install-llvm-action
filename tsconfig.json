@@ -4,7 +4,8 @@
     "lib": ["ES2023"],
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "strict": true
+    "strict": true,
+    "target": "ES2018"
   },
   "files": ["./generate.ts", "./index.ts", "./test.ts"]
 }
