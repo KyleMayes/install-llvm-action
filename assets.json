@@ -21,7 +21,8 @@
       "17.0.3": "/clang%2Bllvm-17.0.3-arm64-apple-darwin22.0.tar.xz",
       "17.0.4": "/clang%2Bllvm-17.0.4-arm64-apple-darwin22.0.tar.xz",
       "17.0.5": "/clang%2Bllvm-17.0.5-arm64-apple-darwin22.0.tar.xz",
-      "17.0.6": "/clang%2Bllvm-17.0.6-arm64-apple-darwin22.0.tar.xz"
+      "17.0.6": "/clang%2Bllvm-17.0.6-arm64-apple-darwin22.0.tar.xz",
+      "18.1.8": "/clang%2Bllvm-18.1.8-arm64-apple-macos11.tar.xz"
     },
     "x64": {
       "9.0.1": "/clang%2Bllvm-9.0.1-x86_64-apple-darwin.tar.xz",
