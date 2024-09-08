@@ -1,3 +1,7 @@
+## [2.0.5] - UNRELEASED
+
+- Added support for LLVM and Clang 18.1.8 on ARM64 macOS
+
 ## [2.0.4] - 2024-08-11
 
 - Added support up to LLVM and Clang 18.1.8 (for platforms with binaries available)
