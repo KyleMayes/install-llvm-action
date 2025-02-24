@@ -1,4 +1,4 @@
-## [2.0.6] - UNRELEASED
+## [2.0.6] - 2025-02-24
 
 - Added support for LLVM and Clang 19
 
