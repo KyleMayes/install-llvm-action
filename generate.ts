@@ -43,7 +43,7 @@ const ASSET_PATTERNS: [Asset["os"], Asset["arch"], RegExp][] = [
   ["darwin", "arm64", /^clang\+llvm-.+-arm64-apple-(darwin|macos).*\.tar\.xz$/],
   ["darwin", "x64", /^clang\+llvm-.+-x86_64-apple-(darwin|macos).*\.tar\.xz$/],
   ["linux", "arm64", /^clang\+llvm-.+-aarch64-linux-gnu.*\.tar\.xz$/],
-  ["linux", "x64", /^clang\+llvm-.+-x86_64-linux-gnu-?ubuntu.*\.tar\.xz$/],
+  ["linux", "x64", /^(clang\+llvm-.+-x86_64-linux-gnu-?ubuntu.*)|(LLVM-.+-Linux-X64)\.tar\.xz$/],
   ["win32", "arm64", /^LLVM-.+-woa64\.exe$/],
   ["win32", "x64", /^LLVM-.+-win64\.exe$/],
 ];
