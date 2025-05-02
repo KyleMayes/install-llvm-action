@@ -40,9 +40,9 @@ interface Asset {
 }
 
 const ASSET_PATTERNS: [Asset["os"], Asset["arch"], RegExp][] = [
-  ["darwin", "arm64", /^clang\+llvm-.+-arm64-apple-(darwin|macos).*\.tar\.xz$/],
-  ["darwin", "x64", /^clang\+llvm-.+-x86_64-apple-(darwin|macos).*\.tar\.xz$/],
-  ["linux", "arm64", /^clang\+llvm-.+-aarch64-linux-gnu.*\.tar\.xz$/],
+  ["darwin", "arm64", /^(clang\+llvm-.+-arm64-apple-(darwin|macos).*)|(LLVM-.*-macOS-ARM64)\.tar\.xz$/],
+  ["darwin", "x64", /^(clang\+llvm-.+-x86_64-apple-(darwin|macos).*)|(LLVM-.*-macOS-X64)\.tar\.xz$/],
+  ["linux", "arm64", /^(clang\+llvm-.+-aarch64-linux-gnu.*)|(LLVM-.+-Linux-ARM64)\.tar\.xz$/],
   ["linux", "x64", /^(clang\+llvm-.+-x86_64-linux-gnu-?ubuntu.*)|(LLVM-.+-Linux-X64)\.tar\.xz$/],
   ["win32", "arm64", /^LLVM-.+-woa64\.exe$/],
   ["win32", "x64", /^LLVM-.+-win64\.exe$/],
@@ -108,7 +108,7 @@ async function generate() {
     }
   };
 
-  const json = stringify(output, { space: "  ", cmp: comparator });
+  const json = stringify(output, { space: "  ", cmp: comparator }) ?? "";
   writeFileSync(resolve(__dirname, "assets.json"), json);
 }
 
