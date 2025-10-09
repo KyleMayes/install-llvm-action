@@ -1,4 +1,4 @@
-## [2.0.8] - UNRELEASED
+## [2.0.8] - 2025-10-09
 
 - Added support for LLVM and Clang 21 (for platforms with binaries available)
 
