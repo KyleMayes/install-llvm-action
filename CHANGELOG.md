@@ -1,3 +1,7 @@
+## [2.0.9] - 2026-01-20
+
+- Added support for additional LLVM and Clang 20/21 versions
+
 ## [2.0.8] - 2025-10-09
 
 - Added support for LLVM and Clang 21 (for platforms with binaries available)
