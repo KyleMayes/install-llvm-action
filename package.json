@@ -20,7 +20,7 @@
   "devDependencies": {
     "@octokit/rest": "^21",
     "@types/lodash": "^4",
-    "@types/node": "~20",
+    "@types/node": "~24",
     "json-stable-stringify": "^1",
     "lodash": "^4",
     "parcel": "^2",
@@ -30,7 +30,7 @@
   "targets": {
     "main": {
       "context": "node",
-      "engines": { "node": "20" },
+      "engines": { "node": "24" },
       "includeNodeModules": true
     }
   }

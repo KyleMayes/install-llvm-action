@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
     "esModuleInterop": true,
-    "lib": ["ES2023"],
+    "lib": ["ES2025"],
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "strict": true,
-    "target": "ES2018"
+    "target": "ES2024"
   },
   "files": ["./generate.ts", "./index.ts", "./test.ts"]
 }
